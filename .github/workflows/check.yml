@@ -1,0 +1,28 @@
+name: Ernesto checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      npm_config_cache: ${{ github.workspace }}/.agent-cache/npm
+      CLAUDE_CONFIG_DIR: ${{ github.workspace }}/.agent-cache/claude
+      DISABLE_TELEMETRY: '1'
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.3.0'
+      - run: npm ci --ignore-scripts --legacy-peer-deps
+      - run: npm ci --ignore-scripts --legacy-peer-deps
+        working-directory: examples/vitest-demo
+      - run: npm run format:check
+      - run: npm test
+      - run: git diff --exit-code -- examples/vitest-demo
+      - run: npm run test:host
+      - run: npm run validate
+      - run: npm audit --audit-level=moderate
+      - run: python3 scripts/package.py
+      - run: git diff --check

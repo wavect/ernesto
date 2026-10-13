@@ -1,0 +1,68 @@
+{
+  "capture": "actual CLI ANSI output rendered as terminal cells; fixed pane/band crops; pauses shortened",
+  "stages": [
+    {
+      "label": "Companion mode; QA off",
+      "captured_seconds": 1.649
+    },
+    {
+      "label": "Passed for recorded scope; snapshot matched",
+      "captured_seconds": 7.869
+    },
+    {
+      "label": "Source edit: previous pass becomes stale",
+      "captured_seconds": 9.88
+    },
+    {
+      "label": "Real failing test: failure is shown",
+      "captured_seconds": 14.395
+    },
+    {
+      "label": "Chocolate changes mood, evidence stays failed",
+      "captured_seconds": 17.678
+    }
+  ],
+  "candidate": "0.1.0-rc.1",
+  "host": "Claude Code 2.1.296",
+  "os": "macOS 26.5.1",
+  "node": "24.3.0",
+  "runner": "Vitest 4.1.11",
+  "dimensions": [
+    960,
+    800
+  ],
+  "duration_seconds": 25,
+  "model_calls": 0,
+  "synthetic_data": true,
+  "source_sha256": {
+    "core/companion.js": "983d672da2e0118cc5dfab43dce10b388a6159d11eddd7012d4beff0b9af9598",
+    "core/snapshot.js": "6a6cb7de82535a23af841eaf01e72fba5bce639661b11f4064e3b68bd1f148e1",
+    "core/evidence.js": "b20a9f98d301c033c389dfeceb4fd054223136f712348b64cd276622ae7a5de2",
+    "hooks/register.js": "0a1c34bcab034eafb5bf258d2c004e474b6efe0a56ea7b1b70cabfb9c4bc65de",
+    "hooks/hooks.json": "179d3376cd6c0c7467a63fb5213b144c7e070c26ae5bd144d7d03b91fb88cabd",
+    "ui/mascot.js": "a5f460cc93c57fbb2c8489a876efd298e37aa9a5221bdbfe9aad8391b7104994",
+    "ui/view.js": "c51a42c006cbf47d17890a8788837a49113a14a12383af245ad63baf1322ed87",
+    "integrations/vitest/node-fs.mjs": "b8f6fe8ec9971221e41dc48713ac536e0aa546af4c75385319f1bd2636339405",
+    "integrations/vitest/run.mjs": "8dec0a0682a831836659451c0656cc821eb7ff1d70b24b6f95eadf179a6bb3a3",
+    "integrations/vitest/errors-reporter.mjs": "d6a8a7a46e2356c9a2bf1dd54dcca46c191ffffeb653ac74626b4ee4ae599425",
+    "integrations/vitest/report.mjs": "a467c1546834ebca8fb5e9820730e6ba5c1b0afb5e11c33464281e18d511b55f"
+  },
+  "privacy_review": "All exported views contain only selected terminal cells, synthetic scope names, scalar evidence and public version information. Launcher, local paths, account details and command history omitted by fixed crops.",
+  "files": {
+    "ernesto-cli-4.png": "43ac7a872c5cd486d0ca7c42a4d72ab9c926249f12b8a40b6765247f5d5fc45a",
+    "ernesto-cli-3.png": "651511ccbf30eded12e08f1022bfea07814ea086fcc7c4185fcf91da6479789b",
+    "ernesto-cli-2.png": "9c6086d4dc68fcc2b681ae254a8222728b32cc84b918f8dd62349070f04b436d",
+    "ernesto-cli-0.png": "01ee725e975b98fabdb3a4848c89dfe2e9ad3a03bba3837cb9329538feb66197",
+    "ernesto-cli-en.vtt": "4b21fbadd17d165dda17a2b8ce68d96c3ea66de22fcb0d6af1a01b50ece5699c",
+    "ernesto-cli-1.png": "df1cce0224a95a43011d22fa6b236c8b271e3fcc61f240f16a1d19096b3c1196",
+    "ernesto-cli-zh.vtt": "aa0249c6f7557d9d8485539c385acf0a95c0cfcec6c70b61ec4aa2b6beef7513",
+    "ernesto-cli-candidate.mp4": "15202415fde0d98ff3ca7a511ba8bd53430d53ee00e70e103785473b436a59e1",
+    "ernesto-cli-de.md": "1319f0fc80105f7717bc3b78852e1dfa80363f80f9f4b47665ebd5f4a362a423",
+    "ernesto-cli-es.md": "454e421e145e1bbef7f5c542ff6d4729703cc060ec984c9da77d3990df17cf8e",
+    "ernesto-cli-de.vtt": "ed390f20af307b1900de967175754a3a2920df44098f8075d9afa07b73209b07",
+    "ernesto-cli-poster.png": "df1cce0224a95a43011d22fa6b236c8b271e3fcc61f240f16a1d19096b3c1196",
+    "ernesto-cli-es.vtt": "791acb89b38584347ddd4a2a2d75da7c638a18ee76f04005a7f3b94147bedb3c",
+    "ernesto-cli-zh.md": "0de814a3ed0d22fc40d00dfb4d960ba938900b699e21865103036b9cd065f438",
+    "ernesto-cli-en.md": "b0ae369e6ca4f1d4199455b8366e02b33cd7fdfbd691fc518655285975ae7094"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "ernesto",
+  "version": "0.1.0-rc.1",
+  "description": "Wavect companion with optional scoped Vitest evidence",
+  "author": {
+    "name": "Wavect GmbH"
+  },
+  "homepage": "https://wavect.io/tools/ernesto-claude-code/",
+  "repository": "https://github.com/wavect/ernesto",
+  "displayName": "Ernesto for Claude Code",
+  "userConfig": {
+    "quiet": {
+      "type": "boolean",
+      "title": "Quiet companion",
+      "description": "Keep evidence text and suppress jokes.",
+      "default": false
+    },
+    "reducedMotion": {
+      "type": "boolean",
+      "title": "Reduced motion",
+      "description": "Use static poses without decorative timers.",
+      "default": true
+    },
+    "hidden": {
+      "type": "boolean",
+      "title": "Hide companion",
+      "description": "Hide the band; commands remain available.",
+      "default": false
+    }
+  },
+  "license": "MIT"
+}

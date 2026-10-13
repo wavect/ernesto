@@ -5,3 +5,9 @@ node_modules/
 .env*
 .ernesto/
 *.log
+
+# Claude plugin authoring emits this alongside ignored host declarations.
+tsconfig.json
+
+__pycache__/
+*.pyc
