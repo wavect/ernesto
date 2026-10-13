@@ -24,3 +24,10 @@ To verify fail-closed behavior, use a temporary branch with one synthetic
 failing test fixture. Confirm that the test step and workflow fail, later
 release gates are skipped, and the downloaded artifact contains only the
 allowed scalar fields. Keep this fixture out of the review branch and release.
+
+Verified on 14 October 2026: the [normal branch workflow](https://github.com/wavect/ernesto/actions/runs/38484320384)
+passed. A [separate controlled negative fixture](https://github.com/wavect/ernesto/actions/runs/38484376094)
+failed the test step, kept the workflow failed and skipped later host/package
+release gates. Its downloaded summary recorded the failed/skipped outcomes and
+only the allowed scalar fields. The failing fixture is absent from this branch
+and the immutable published prerelease.
