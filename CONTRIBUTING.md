@@ -10,3 +10,17 @@ Use synthetic data only in public tests and demos. Do not attach keys,
 client source, raw test output, transcripts or private paths to issues.
 Original code is MIT; mascot artwork has separate terms. No automatic merge,
 release, directory submission or external announcement is part of CI.
+
+## CI failure evidence
+
+Every failed check job attempts to save `ernesto-ci-failure-status` for seven
+days. It contains only a validated public commit SHA, event type, running Node version, configured host/runner pins
+and fixed stage outcomes. Raw test output, names, source contents, prompts,
+paths and arbitrary environment variables are excluded. The artifact upload
+uses an exact summary-file path; it does not upload the cache directory.
+Failure reporting never changes the original failed gate to success.
+
+To verify fail-closed behavior, use a temporary branch with one synthetic
+failing test fixture. Confirm that the test step and workflow fail, later
+release gates are skipped, and the downloaded artifact contains only the
+allowed scalar fields. Keep this fixture out of the review branch and release.

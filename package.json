@@ -11,7 +11,7 @@
     "test:host": "node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs plugin test .",
     "validate": "node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs plugin validate --strict .",
     "package": "python3 scripts/package.py",
-    "format:check": "prettier --check \"core/*.js\" \"hooks/*.js\" \"ui/*.js\" \"integrations/**/*.mjs\" \"tests/**/*.mjs\" \"tests/*.ts\" \"examples/vitest-demo/**/*.js\" \"examples/vitest-demo/*.mjs\""
+    "format:check": "prettier --check \"core/*.js\" \"hooks/*.js\" \"ui/*.js\" \"integrations/**/*.mjs\" \"tests/**/*.mjs\" \"tests/*.ts\" \"scripts/*.mjs\" \"examples/vitest-demo/**/*.js\" \"examples/vitest-demo/*.mjs\""
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "2.1.296",
