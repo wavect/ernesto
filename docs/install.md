@@ -1,9 +1,12 @@
 # Installation, updates and removal
 
-Status: release candidate under review. Public commands are proposed until
-an approved tagged version and anonymous clean-profile checks are recorded.
-The public source is https://github.com/wavect/ernesto. Inspect the reviewed
-code and its privacy/license terms before using a privileged mod.
+The commands below describe version 0.1.0-rc.1. Check the
+[versioned release record](https://github.com/wavect/ernesto/releases) for
+publication status, approved checksums and exact released-source checks before
+using them as supported release instructions. Source-main installation checks
+are recorded separately in [release.md](release.md). Inspect the public source
+at https://github.com/wavect/ernesto and its privacy/license terms before
+using a privileged mod.
 
 ## Version and scope
 
@@ -94,4 +97,4 @@ require the administrator's decision, not a workaround.
 
 An approved release rollback must restore a reviewed prior manifest version
 in a normal commit and verify reinstall from a pinned Git checkout locally.
-No public prior release exists yet, so no tested public downgrade is claimed.
+No public version downgrade was exercised during candidate validation; do not infer one from a same-version update.

@@ -1,6 +1,6 @@
 # Candidate review and release gates
 
-Current implementation version: **0.1.0-rc.1**. There is no approved immutable public release, certified public installation or production website deployment. Development checks and a local marketplace test do not establish public availability. No Anthropic directory submission or endorsement is claimed.
+Implementation version: **0.1.0-rc.1**, a prerelease candidate. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
 
 The candidate includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
 
@@ -8,7 +8,25 @@ The candidate includes companion controls, optional scoped Vitest evidence, the 
 
 The tested environment is terminal Claude Code 2.1.296 on macOS 26.5.1 arm64, with Node.js 24.3.0 and project-local Vitest 4.1.11. See [compatibility](compatibility.md) for the distinction between command syntax floors and product testing.
 
-Candidate checks passed: 23 official host tests, 16 Node tests (including four real Vitest integrations and two package tests), strict plugin validation and npm audit with zero vulnerabilities. Independent local marketplace checks exercised combined and fallback installation in user and project scopes, an isolated rc.2 version update and scoped uninstall/reinstall. The actual 25-second CLI demo has five reviewed stages, a poster, screenshots and four caption/transcript languages. Final source and archive reconciliation, remaining measured UI checks, independent signoff and owner approval still apply. CI configuration exists; local results do not prove a GitHub workflow has run or Linux mod behavior is supported.
+Candidate checks passed: 23 official host tests, 16 Node tests (including four real Vitest integrations and two package tests), strict plugin validation and npm audit with zero vulnerabilities. Independent local marketplace checks exercised combined and fallback installation in user and project scopes, an isolated rc.2 version update and scoped uninstall/reinstall. The actual 25-second CLI demo has five reviewed stages, a poster, screenshots and four caption/transcript languages. Independent privacy/package and terminal review passed; [short local performance measurements](performance.md) include a 0.441-second stale-update observation and their limits. Both exact-head GitHub workflows passed for the merged implementation. Those Linux harness results do not establish real Linux terminal UI support. Every release still requires final source/archive reconciliation and owner approval.
+
+## Public-source validation snapshot
+
+On 13 October 2026, independent anonymous checks installed merged main commit
+`2a0b79d29874fb135be4daad5db171a4b7a8020d` at version 0.1.0-rc.1. Shell combined
+and two-step fallback installation, user/project scope, disable/re-enable,
+uninstall, marketplace removal and reinstall passed. Public update returned
+`up_to_date` at rc.1; this is not a public later-version upgrade or downgrade.
+All 72 tracked installed files matched that reviewed source. The cached copy
+passed 23 official host tests and strict validation; its explicit helper ran
+one real passing synthetic test. In-session combined installation requested
+source confirmation and scope selection. A fresh actual session loaded the
+project-scoped companion and `/ernesto status`, with QA off and no model calls.
+In-session two-step fallback user installation and fresh-session status loading
+also passed. Scoped cleanup preserved unrelated profile and project sentinels.
+These results apply to that source snapshot, not an unverified future tag or
+changed source. Versioned release notes must reconcile the published artifact
+and record any repeated installation checks.
 
 ## Reproduce checks
 
@@ -29,7 +47,7 @@ The example tests deliberately change and restore only the synthetic project. Gi
 
 ## Mandatory approval checklist
 
-Every unchecked item remains a release requirement:
+Use this checklist for each release and record its outcomes in the versioned release notes. This reusable template does not report current publication status:
 
 - [ ] Identify the reviewed source commit, candidate version and final archive checksum; inspect complete branch history and files for private material.
 - [ ] Pass pure, official host, real Vitest and package-content tests on that exact source; record skipped checks and limitations. Confirm a deliberate failure cannot create a green verification.
@@ -56,4 +74,4 @@ Public install syntax is documented in [install.md](install.md) as release-gated
 
 If an install or compatibility check fails, retain candidate/unavailable facts and show the limitation. Never loosen parser, crawler, privacy or release gates to turn a failure green. Fix and rerun the affected checks, then rebuild the exact package.
 
-After publication, withdraw broken availability claims, restore a reviewed known-good source/version through a normal commit and independently verify reinstall and live website rollback. No previous approved public release currently exists, so no public downgrade is claimed tested. Plugin removal, preference cleanup and optional project evidence cleanup remain separate user choices; never delete arbitrary project directories.
+After publication, withdraw broken availability claims, restore a reviewed known-good source/version through a normal commit and independently verify reinstall and live website rollback. Candidate validation did not exercise a public version downgrade, so none is claimed tested. Plugin removal, preference cleanup and optional project evidence cleanup remain separate user choices; never delete arbitrary project directories.
