@@ -48,3 +48,22 @@ test('failure receipt cannot include raw logs, paths, tokens, names or arbitrary
     'stages',
   ]);
 });
+
+test('receipt rejects trailing line breaks and non-string metadata rather than preserving it', () => {
+  for (const ending of ['\n', '\r', '\r\n', '\u2028']) {
+    const report = failureSummary(
+      { CI_SOURCE_SHA: 'a'.repeat(40) + ending },
+      '24.3.0' + ending,
+      { vitest: '4.1.11' + ending },
+    );
+    assert.equal(report.sourceCommit, null);
+    assert.equal(report.versions.node, 'unknown');
+    assert.equal(report.versions.vitestPin, 'unknown');
+  }
+  const report = failureSummary(
+    { CI_SOURCE_SHA: { length: 40, toString: () => 'a'.repeat(40) } },
+    { toString: () => '24.3.0' },
+  );
+  assert.equal(report.sourceCommit, null);
+  assert.equal(report.versions.node, 'unknown');
+});

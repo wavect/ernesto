@@ -18,6 +18,7 @@ const outcomes = new Set(['success', 'failure', 'cancelled', 'skipped']);
 const version = (value) =>
   typeof value === 'string' &&
   value.length <= 64 &&
+  value === value.trim() &&
   /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(value)
     ? value
     : 'unknown';
@@ -25,9 +26,12 @@ const version = (value) =>
 export function failureSummary(env, nodeVersion, pins = {}) {
   return {
     schemaVersion: 1,
-    sourceCommit: /^[a-f0-9]{40}$/.test(env.CI_SOURCE_SHA ?? '')
-      ? env.CI_SOURCE_SHA
-      : null,
+    sourceCommit:
+      typeof env.CI_SOURCE_SHA === 'string' &&
+      env.CI_SOURCE_SHA.length === 40 &&
+      /^[a-f0-9]{40}$/.test(env.CI_SOURCE_SHA)
+        ? env.CI_SOURCE_SHA
+        : null,
     event: ['push', 'pull_request'].includes(env.CI_EVENT)
       ? env.CI_EVENT
       : 'unknown',
