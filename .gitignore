@@ -1,0 +1,7 @@
+node_modules/
+.agent-cache/
+.agent-worktrees/
+.claude-plugin/types/
+.env*
+.ernesto/
+*.log
