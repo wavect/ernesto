@@ -1,10 +1,10 @@
 # Compatibility of the review candidate
 
-Ernesto **0.1.0-rc.1** is a review candidate, not an approved public release. The tested mod baseline is **Claude Code 2.1.296**. Future host versions still require validation; a version comparison alone is not proof that every surface works.
+Ernesto **0.1.0-rc.1** is a prerelease candidate. The [versioned release record](https://github.com/wavect/ernesto/releases) identifies its publication status and approved artifact. The tested mod baseline is **Claude Code 2.1.296**. Future host versions still require validation; a version comparison alone is not proof that every surface works.
 
 | Environment | Candidate evidence | Support claim |
 | --- | --- | --- |
-| Terminal CLI, macOS 26.5.1, arm64, Claude Code 2.1.296 | Installed declarations inspected; strict plugin/marketplace validation; official host harness; real terminal loading and synthetic helper work under review | Tested development baseline, public distribution pending |
+| Terminal CLI, macOS 26.5.1, arm64, Claude Code 2.1.296 | Installed declarations inspected; strict plugin/marketplace validation; official host harness; real public-source installation, fresh-session loading and installed helper checked | Tested terminal combination; released artifact must match the versioned release record |
 | Node.js 24.3.0, project-local Vitest 4.1.11 | Real synthetic pass/fail, scope comparisons, omissions, interruptions, concurrent runs and malformed-artifact regressions | Verified explicit helper combination |
 | Desktop Code / window surface | Not tested | No advertised support |
 | Linux, Windows, WSL, remote/cloud sessions | Not tested | No advertised support |
@@ -20,7 +20,7 @@ The official host harness validates hook behavior and drawing trees; it is not a
 | In-session `/plugin install ernesto --marketplace …` | 2.1.275 | 2.1.296 |
 | Companion, local artifact reads and QA drawing | Syntax availability does not establish these capabilities | 2.1.296 on the tested terminal environment |
 
-These syntax floors are documented platform facts, not Ernesto support results for those older versions. The in-session route requests confirmation for a new source and then scope selection. Public `wavect/ernesto` installation stays gated until the approved artifact is anonymously installed and loaded. See [installation](install.md) and [release gates](release.md).
+These syntax floors are documented platform facts, not Ernesto support results for those older versions. The in-session route requests confirmation for a new source and then scope selection. Source-main installation was checked independently on 13 October 2026; an approved release additionally requires anonymous artifact reconciliation and exact released-source loading. See [installation](install.md) and [release gates](release.md).
 
 ## Optional helper boundary
 

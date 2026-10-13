@@ -6,10 +6,12 @@ Ernesto is Wavect's small turquoise-shell companion, with two eyes, a taste for
 chocolate, and optional **scoped Vitest evidence**. Companion mode needs no QA
 configuration. Mood and chocolate never determine test status.
 
-**Release candidate 0.1.0-rc.1:** implementation is under review. No public
-release or supported public installation is available yet. The repository's
-review branch contains the candidate. GitHub marketplace distribution needs
-no Anthropic directory listing; no directory submission has been made.
+**Version 0.1.0-rc.1 is a prerelease candidate.** Check the
+[versioned release record](https://github.com/wavect/ernesto/releases) for
+publication status, approved checksums and tested limitations. A source branch
+or successful source installation alone does not establish an approved release.
+GitHub marketplace distribution needs no Anthropic directory listing; no
+directory submission has been made.
 
 ## Review the candidate
 
@@ -31,7 +33,7 @@ This registers the local marketplace `ernesto` and installs `ernesto@ernesto`
 in user scope. Restart Claude Code to load the installed version. Local
 candidate installation is different from anonymous public-release availability.
 
-The eventual public shell command, **after release verification**, is:
+The public shell command, **for an approved and verified release**, is:
 
 ```sh
 claude plugin install ernesto --marketplace wavect/ernesto
@@ -121,7 +123,7 @@ are cropped and pauses shortened. It shows QA off, a real pass, a source edit
 making it stale, a real failing run, and chocolate leaving evidence unchanged.
 [English transcript](docs/media/ernesto-cli-en.md), plus German, Spanish and
 Chinese transcripts and captions, accompany the recording. This is a tested
-candidate demonstration, pending release approval.
+candidate demonstration. Publication status belongs to the versioned release record.
 
 ## Development and checks
 
