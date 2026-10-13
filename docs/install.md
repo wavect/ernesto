@@ -1,0 +1,97 @@
+# Installation, updates and removal
+
+Status: release candidate under review. Public commands are proposed until
+an approved tagged version and anonymous clean-profile checks are recorded.
+The public source is https://github.com/wavect/ernesto. Inspect the reviewed
+code and its privacy/license terms before using a privileged mod.
+
+## Version and scope
+
+Ernesto requires Claude Code 2.1.296+. The shell combined command itself was
+added in 2.1.292; the in-session combined route in 2.1.275. A syntax floor does
+not imply that an older version supports Ernesto's runtime. Shell installation
+defaults to user scope; `--scope project` or `--scope local` are explicit choices.
+Organizational restrictions are not bypassed by this mod.
+
+## Release-gated public commands
+
+From the shell:
+
+```sh
+claude plugin install ernesto --marketplace wavect/ernesto
+```
+
+Inside a Claude Code session, with source confirmation and scope selection:
+
+```text
+/plugin install ernesto --marketplace wavect/ernesto
+```
+
+Fallback from the shell:
+
+```sh
+claude plugin marketplace add wavect/ernesto
+claude plugin install ernesto@ernesto
+```
+
+Fallback in-session uses `/plugin marketplace add wavect/ernesto`, then
+`/plugin install ernesto@ernesto`. Marketplace name and plugin name are
+`ernesto`; GitHub source `wavect/ernesto` is not the marketplace ID.
+
+Verify with `claude --version`, `claude plugin marketplace list`,
+`claude plugin list`, and `claude plugin details ernesto`. Restart or use
+`/reload-plugins` where supported, then run `/ernesto` in a fresh session.
+A registered marketplace alone does not prove loaded hooks or working UI.
+
+## Local review
+
+From the reviewed checkout, use `claude --plugin-dir .` for development, or
+`claude plugin install ernesto --marketplace .` for a local catalog install.
+Tests must use a clean profile, inspect the installed cache for missing imports,
+and start a fresh session. Local tests do not certify public availability.
+
+## Updates and disable
+
+```sh
+claude plugin update ernesto@ernesto
+claude plugin disable ernesto@ernesto
+claude plugin enable ernesto@ernesto
+```
+
+Restart/reload after update. The manifest version must be incremented for
+new code to replace an installed cached version. Third-party marketplace
+auto-update defaults off; users may enable it in `/plugin` Marketplaces.
+
+## Remove
+
+```sh
+claude plugin uninstall ernesto@ernesto
+```
+
+For project/local scope add `--scope project` or `--scope local`, matching
+installation. If desired, unregister the marketplace after uninstall:
+
+```sh
+claude plugin marketplace remove ernesto
+```
+
+Marketplace removal uninstalls every plugin from that marketplace. It is a
+separate choice from removing one plugin. Run `/ernesto forget confirm`
+before uninstall to remove only Ernesto's preferences for this workspace.
+Project config and local evidence are separately owned: review and remove
+only `.ernesto/config.json` and validated files in its run directories.
+No broad recursive deletion command is required. The optional source helper
+can be removed from the location where you deliberately placed it.
+
+## Troubleshooting and rollback
+
+Not found: check reviewed source, marketplace spelling, manifest source `./`,
+permissions and release status. Installed but no UI: check host version,
+scope, surface, enable state, restart/reload and `/ernesto`. QA unknown:
+review config, permissions, exact Node/Vitest requirements and explicit
+helper run. No report is not a passing check. Disabled organizational mods
+require the administrator's decision, not a workaround.
+
+An approved release rollback must restore a reviewed prior manifest version
+in a normal commit and verify reinstall from a pinned Git checkout locally.
+No public prior release exists yet, so no tested public downgrade is claimed.

@@ -1,0 +1,21 @@
+{
+  "name": "@wavect/ernesto",
+  "version": "0.1.0-rc.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 tests/*.mjs",
+    "test:host": "node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs plugin test .",
+    "validate": "node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs plugin validate --strict .",
+    "package": "python3 scripts/package.py",
+    "format:check": "prettier --check \"core/*.js\" \"hooks/*.js\" \"ui/*.js\" \"integrations/**/*.mjs\" \"tests/**/*.mjs\" \"tests/*.ts\" \"examples/vitest-demo/**/*.js\" \"examples/vitest-demo/*.mjs\""
+  },
+  "devDependencies": {
+    "@anthropic-ai/claude-code": "2.1.296",
+    "prettier": "3.6.2",
+    "vitest": "4.1.11"
+  }
+}

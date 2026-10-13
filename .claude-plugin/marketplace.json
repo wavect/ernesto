@@ -1,0 +1,16 @@
+{
+  "name": "ernesto",
+  "owner": {
+    "name": "Wavect GmbH"
+  },
+  "metadata": {
+    "description": "Wavect Ernesto for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "ernesto",
+      "source": "./",
+      "description": "A companion with optional scoped Vitest evidence"
+    }
+  ]
+}

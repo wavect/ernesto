@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "checkId": "vitest",
+  "scope": {"roots": ["src", "tests", "package.json", "package-lock.json", "vitest.config.js"], "excludes": []},
+  "filters": ["tests/add.test.js"],
+  "runtimeDescriptor": "node-24/vitest-4.1.11"
+}

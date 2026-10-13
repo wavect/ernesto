@@ -1,0 +1,16 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+Der Begleitermodus startet mit ausgeschalteter QA.
+
+00:00:05.000 --> 00:00:10.000
+Der ausdrücklich gestartete lokale Vitest-Helfer erfasst einen Erfolg für einen ausgewählten Test.
+
+00:00:10.000 --> 00:00:15.000
+Eine Quellcodeänderung macht den vorherigen Erfolg veraltet.
+
+00:00:15.000 --> 00:00:20.000
+Ein neuer echter Testlauf schlägt fehl. Der Host zeigt den Fehler.
+
+00:00:20.000 --> 00:00:25.000
+Schokolade ändert die Stimmung des Begleiters; der fehlgeschlagene Nachweis bleibt unverändert.
