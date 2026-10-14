@@ -1,15 +1,15 @@
-Aufnahme der tatsächlichen Terminalausgabe von Claude Code 2.1.296 unter macOS 26.5.1 mit dem unveröffentlichten Entwicklungskandidaten Ernesto 0.2.0, Node 24.3.0 und Vitest 4.1.11. Das Beispiel enthält einen synthetischen lokalen Rechentest. Originale Terminalzellen werden als beschriftete Begleiter- und Nachweisansichten zugeschnitten; Überschriften und untere Bildtexte sind redaktionelle Einblendungen. Eingaben und Wartezeiten zwischen den Abschnitten sind ausgelassen. Die Ausgabe wurde mit 8 Bildern pro Sekunde erfasst und mit 12 Bildern pro Sekunde kodiert. Der Helfer lief ausdrücklich als separater lokaler Prozess, einmal erfolgreich und einmal mit Fehler. Es gab keinen Modellprompt oder Modellaufruf und keinen gesprochenen Kommentar. Ein Abgleich gilt für deklarierte Eingaben zum Vergleichszeitpunkt, nicht für externe Dienste, fachliche Abnahme oder manipulationssichere Ausführung. Übersetzte Untertitel bedeuten keine lokalisierte Plugin-Oberfläche.
+Tatsächliche Terminalausgabe von Claude Code 2.1.296 unter macOS 26.5.1 mit dem unveröffentlichten Ernesto 0.3.0 und Node 24.3.0. Ein synthetischer Rechentest wird über den nativen Knopf Check project als npm run test ausgeführt. Keine Ernesto-Projektkonfiguration und kein kopierter Helferbefehl. Originalzellen sind zugeschnitten; Titel und untere Bildtexte sind redaktionelle Einblendungen. Eingaben und Wartezeiten zwischen Abschnitten fehlen. Erfasst mit 8 fps, kodiert mit 12 fps, ohne Sprecher oder Modellaufruf. Die echten Exitcodes waren null und eins. Ein erfolgreicher Befehl bestätigt keine Testanzahl oder Abdeckung. Eingabeabgleiche gelten nur für begrenzte Eingaben zum Vergleichszeitpunkt, nicht als fachliche Abnahme oder manipulationssichere Ausführung. Untertitel bedeuten keine lokalisierte Oberfläche.
 
-QA startet eingeschaltet. /ernesto setup zeigt den lokalen Befehl.
+Installieren und neu starten. Ernesto erkennt den vorhandenen Testbefehl.
 
-Der explizite --init-Aufruf erstellt Standards und führt einen echten Test erfolgreich aus.
+Check project führt npm run test direkt aus. Keine Helferpfade oder Projekt-JSON.
 
-Umfang und Datensatz aufklappen: Der Abgleich gilt nur für deklarierte Eingaben.
+Details zeigt die Befehlsausgabe. Exit null bestätigt keine Testanzahl.
 
-Eine Quellcodeänderung macht den vorherigen Erfolg veraltet.
+Eine Quellcodeänderung macht den vorherigen Eingabeabgleich veraltet.
 
-Ein weiterer expliziter Testlauf schlägt fehl. Ernesto behält das Ergebnis.
+Check project schlägt beim nächsten Lauf wirklich fehl. Exit und Aktualität bleiben getrennt.
 
-/ernesto quiet on blendet Sprüche aus. Nachweise und Steuerung bleiben.
+Quiet blendet Sprüche aus. Nachweise und Steuerung bleiben.
 
-Sprüche einschalten, Schokolade anbieten. Das Ergebnis bleibt fehlgeschlagen.
+Sprüche einschalten und Schokolade anbieten. Der Fehler bleibt bestehen.

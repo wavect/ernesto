@@ -1,15 +1,15 @@
-Grabación de la salida real del terminal de Claude Code 2.1.296 en macOS 26.5.1, con el candidato de desarrollo no publicado Ernesto 0.2.0, Node 24.3.0 y Vitest 4.1.11. El ejemplo contiene una prueba aritmética local sintética. Las celdas originales del terminal se recortan en vistas identificadas del compañero y la evidencia; los títulos y textos inferiores son superposiciones editoriales. Se omiten la escritura y las esperas entre etapas. La salida se capturó a 8 fps y se codificó a 12 fps. El ayudante se inició explícitamente como otro proceso local: una ejecución pasó y otra falló. No se enviaron prompts ni llamadas al modelo. No hay narración. La coincidencia cubre las entradas declaradas en el momento de comparación, no servicios externos, aceptación funcional ni una ejecución resistente a manipulaciones. Los subtítulos traducidos no implican una interfaz localizada del plugin.
+Salida real del terminal de Claude Code 2.1.296 en macOS 26.5.1 con Ernesto 0.3.0 no publicado y Node 24.3.0. Una prueba aritmética sintética se ejecuta con el botón nativo Check project mediante npm run test. No se utilizó configuración de Ernesto ni un comando auxiliar manual. Las celdas se recortan; títulos y textos inferiores son superposiciones editoriales. Se omiten la escritura y las esperas entre etapas. Capturado a 8 fps y codificado a 12 fps, sin narración ni llamadas al modelo. Los códigos reales fueron cero y uno. El éxito de un comando no verifica el número de pruebas ni la cobertura. Las coincidencias cubren entradas limitadas en el momento de comparación, no aceptación funcional ni ejecución resistente a manipulaciones. Las traducciones no implican una interfaz localizada.
 
-QA empieza activado. /ernesto setup muestra el comando local.
+Instala y reinicia. Ernesto detecta el comando de pruebas existente.
 
---init, iniciado explícitamente, crea la configuración y ejecuta una prueba real que pasa.
+Check project ejecuta npm run test directamente, sin rutas auxiliares ni JSON.
 
-Despliega alcance y registro. La coincidencia cubre solo las entradas declaradas.
+Details muestra la salida real. Un código cero no verifica el número de pruebas.
 
-Editar el código declarado deja desactualizado el resultado anterior.
+Un cambio de código deja desactualizada la comparación de entradas anterior.
 
-Otra ejecución explícita falla de verdad. Ernesto conserva el fallo.
+Check project vuelve a ejecutarse y falla. El código de salida y la vigencia son independientes.
 
-/ernesto quiet on oculta bromas y mantiene evidencia y controles.
+Quiet oculta las bromas y mantiene la evidencia y los controles.
 
 Reactiva las bromas y ofrece chocolate. El resultado sigue fallido.

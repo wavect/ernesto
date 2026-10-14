@@ -1,6 +1,19 @@
 # Changelog
 
-## 0.2.0, unreleased
+## 0.3.0, unreleased
+
+Install and restart to get the companion immediately. No project config is
+required. Check project and `/ernesto check` run a detected existing package
+check through the host process API only on explicit user action. Detection
+supports npm, pnpm, yarn and bun scripts, with no dependency downloads.
+Command completion, failure and input freshness remain separate from verified
+test evidence; no test counts or coverage are invented. Bounded output stays
+in session memory behind Details. Off/hide/workspace changes discard late
+results. The optional exact Vitest integration and existing config remain
+compatible; its explicit fallback initializes missing defaults internally.
+Setup/doctor show concise readiness instead of manual cache-path instructions.
+
+## 0.2.0, source main, no tagged release
 
 Guided `/ernesto setup` and `/ernesto doctor`; QA observation on by default;
 workspace on/off preferences retained across sessions; automatic connection to

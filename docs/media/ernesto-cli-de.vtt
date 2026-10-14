@@ -1,29 +1,30 @@
 WEBVTT
 
 00:00:00.000 --> 00:00:06.000
-QA startet eingeschaltet. /ernesto setup zeigt
-den lokalen Befehl.
+Installieren und neu starten. Ernesto erkennt
+den vorhandenen Testbefehl.
 
 00:00:06.000 --> 00:00:14.000
-Der explizite --init-Aufruf erstellt Standards
-und führt einen echten Test erfolgreich aus.
+Check project führt npm run test direkt aus.
+Keine Helferpfade oder Projekt-JSON.
 
 00:00:14.000 --> 00:00:20.000
-Umfang und Datensatz aufklappen: Der Abgleich
-gilt nur für deklarierte Eingaben.
+Details zeigt die Befehlsausgabe. Exit null
+bestätigt keine Testanzahl.
 
 00:00:20.000 --> 00:00:26.000
 Eine Quellcodeänderung macht den vorherigen
-Erfolg veraltet.
+Eingabeabgleich veraltet.
 
 00:00:26.000 --> 00:00:34.000
-Ein weiterer expliziter Testlauf schlägt fehl.
-Ernesto behält das Ergebnis.
+Check project schlägt beim nächsten Lauf
+wirklich fehl. Exit und Aktualität bleiben
+getrennt.
 
 00:00:34.000 --> 00:00:40.000
-/ernesto quiet on blendet Sprüche aus. Nachweise
-und Steuerung bleiben.
+Quiet blendet Sprüche aus. Nachweise und
+Steuerung bleiben.
 
 00:00:40.000 --> 00:00:46.000
-Sprüche einschalten, Schokolade anbieten. Das
-Ergebnis bleibt fehlgeschlagen.
+Sprüche einschalten und Schokolade anbieten. Der
+Fehler bleibt bestehen.

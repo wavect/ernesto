@@ -12,12 +12,13 @@ Ernesto **0.1.0** retains the tested terminal companion and evidence behavior. T
 
 The official host harness validates hook behavior and drawing trees; it is not a substitute for real terminal screenshots, an installed-copy lifecycle or a Desktop test. Final release review must retain those separate results. The current UI uses native Raster artwork on sufficiently tall terminals and a compact text/pixel fallback at smaller sizes. Commands provide essential text. The evidence pane is opened intentionally, and reduced motion is the default.
 
-The source-branch [46-second demo](media/ernesto-cli-candidate.mp4) records the
-unreleased 0.2.0 candidate on that same macOS/host/runtime combination. It uses
-real terminal cells, one explicit passing and one explicit failing helper run,
-and no model calls. Editorial headings and translated captions are separate
-from the English plugin UI. The recording does not extend platform support or
-establish a published 0.2.0 release.
+The source-branch [46-second demo](media/ernesto-cli-candidate.mp4) records
+unreleased 0.3.0 on the same macOS/host combination with Node 24.3.0. The native
+Check project button runs `npm run test` using Node's built-in test runner,
+with real exit-zero/exit-one results and no project config or model call.
+The separate native Vitest-only check also initialized missing defaults and
+showed a verified pass, stale edit and verified failure. Editorial headings
+and translated captions do not extend platform support or establish release.
 
 ## Command syntax versus mod requirements
 
@@ -29,13 +30,23 @@ establish a published 0.2.0 release.
 
 These syntax floors are documented platform facts, not Ernesto support results for those older versions. The in-session route requests confirmation for a new source and then scope selection. Source-main installation was checked independently on 13 October 2026; an approved release additionally requires anonymous artifact reconciliation and exact released-source loading. See [installation](install.md) and [release gates](release.md).
 
+## 0.3.0 project-command candidate
+
+Companion use and ordinary project commands require no Ernesto JSON or exact
+Vitest version. Detection covers existing npm/pnpm/yarn/bun package scripts;
+Only npm was exercised as an actual generic command in this candidate;
+pnpm/yarn/bun selection is covered by deterministic tests, not real executions.
+Actual command exits are reported separately from verified test counts and
+input freshness. No command is run automatically. Node is needed by the
+project's own toolchain when applicable, not by the companion.
+
 ## Optional helper boundary
 
 Companion mode needs no Node runtime, test runner or QA configuration. The separately invoked helper ships inside the plugin with its pure core modules. It requires **Node major 24** and the project's already installed **Vitest 4.1.11**, refuses other combinations, and never downloads a runner. The tested Node patch version is 24.3.0; other Node 24 patch versions have not been separately qualified.
 
-The host reads the reviewed runtime descriptor and installed Vitest version. It cannot independently establish the runtime of a future test process, environment secrets, native state or external services. Snapshots describe only captured inputs, with explicit exclusions and observation limits. Review [the evidence method](evidence.md) and declared scope. Candidate 0.2.0 enables observation by default; `/ernesto qa off` remembers a workspace override.
+The host reads the reviewed runtime descriptor and installed Vitest version. It cannot independently establish the runtime of a future test process, environment secrets, native state or external services. Snapshots describe only captured inputs, with explicit exclusions and observation limits. Review [the evidence method](evidence.md) and declared scope. Candidate 0.3.0 enables observation by default; `/ernesto qa off` remembers a workspace override.
 
-If an optional host facility is missing, use the text commands to inspect the limitation. Older/unsupported hosts refuse QA before project scans; no unavailable capability is converted into passing evidence. Disable/hide stops scheduled evidence work. No fallback launches a subprocess or makes a model/network call.
+If an optional host facility is missing, use the text commands to inspect the limitation. Older/unsupported hosts refuse QA before project scans; no unavailable capability is converted into passing evidence. Disable/hide stops scheduled evidence work. Only Check project or /ernesto check launches an explicit project process. No startup or fallback makes a model/network call. A process already launched may continue until completion or the two-minute timeout; off/hide discards its later result.
 
 ## Adding a support row
 
