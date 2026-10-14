@@ -1,6 +1,6 @@
 # Installation, updates and removal
 
-The commands below describe version 0.1.0-rc.1. Check the
+The commands below describe version 0.1.0. Check the
 [versioned release record](https://github.com/wavect/ernesto/releases) for
 publication status, approved checksums and exact released-source checks before
 using them as supported release instructions. Source-main installation checks

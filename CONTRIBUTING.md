@@ -30,4 +30,4 @@ passed. A [separate controlled negative fixture](https://github.com/wavect/ernes
 failed the test step, kept the workflow failed and skipped later host/package
 release gates. Its downloaded summary recorded the failed/skipped outcomes and
 only the allowed scalar fields. The failing fixture is absent from this branch
-and the immutable published prerelease.
+and the immutable published release.

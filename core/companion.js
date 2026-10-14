@@ -1,4 +1,4 @@
-export const HELP = `Ernesto 0.1.0-rc.1, Wavect companion for Claude Code.
+export const HELP = `Ernesto 0.1.0, Wavect companion for Claude Code.
 /ernesto evidence | refresh | hide | show | chocolate
 /ernesto quiet on|off | motion reduced|normal
 /ernesto qa setup | qa enable | qa off | forget confirm

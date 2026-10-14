@@ -1,16 +1,18 @@
-# Candidate review and release gates
+# Release verification and recovery
 
-Implementation version: **0.1.0-rc.1**, a prerelease candidate. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
+Implementation version: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
 
-The candidate includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
+The release includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
 
 ## Reviewable evidence
 
 The tested environment is terminal Claude Code 2.1.296 on macOS 26.5.1 arm64, with Node.js 24.3.0 and project-local Vitest 4.1.11. See [compatibility](compatibility.md) for the distinction between command syntax floors and product testing.
 
-Candidate checks passed: 23 official host tests, 16 Node tests (including four real Vitest integrations and two package tests), strict plugin validation and npm audit with zero vulnerabilities. Independent local marketplace checks exercised combined and fallback installation in user and project scopes, an isolated rc.2 version update and scoped uninstall/reinstall. The actual 25-second CLI demo has five reviewed stages, a poster, screenshots and four caption/transcript languages. Independent privacy/package and terminal review passed; [short local performance measurements](performance.md) include a 0.441-second stale-update observation and their limits. Both exact-head GitHub workflows passed for the merged implementation. Those Linux harness results do not establish real Linux terminal UI support. Every release still requires final source/archive reconciliation and owner approval.
+Historical rc.1 checks passed: 23 official host tests, 16 Node tests (including four real Vitest integrations and two package tests), strict plugin validation and npm audit with zero vulnerabilities. Independent local marketplace checks exercised combined and fallback installation in user and project scopes, an isolated rc.2 version update and scoped uninstall/reinstall. The actual 25-second CLI demo has five reviewed stages, a poster, screenshots and four caption/transcript languages. Independent privacy/package and terminal review passed; [short local performance measurements](performance.md) include a 0.441-second stale-update observation and their limits. Both exact-head GitHub workflows passed for the merged implementation. Those Linux harness results do not establish real Linux terminal UI support. Every release still requires final source/archive reconciliation and owner approval.
 
-## Public-source validation snapshot
+The stable version changes the displayed version and release documentation, and adds bounded CI failure receipts. Runtime behavior, helper behavior, artwork rights and compatibility limits remain as documented. Exact stable checks, source and archive results belong to its versioned release record. The immutable rc.1 release remains available.
+
+## Historical rc.1 public-source validation snapshot
 
 On 13 October 2026, independent anonymous checks installed merged main commit
 `2a0b79d29874fb135be4daad5db171a4b7a8020d` at version 0.1.0-rc.1. Shell combined
@@ -30,7 +32,7 @@ and record any repeated installation checks.
 
 ## Reproduce checks
 
-From the candidate checkout, with caches inside that checkout:
+From the reviewed checkout, with caches inside that checkout:
 
 ```sh
 env npm_config_cache="$PWD/.agent-cache/npm" npm ci --ignore-scripts --legacy-peer-deps

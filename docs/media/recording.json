@@ -3,26 +3,27 @@
   "stages": [
     {
       "label": "Companion mode; QA off",
-      "captured_seconds": 1.649
+      "captured_seconds": 1.081
     },
     {
       "label": "Passed for recorded scope; snapshot matched",
-      "captured_seconds": 7.869
+      "captured_seconds": 6.591
     },
     {
       "label": "Source edit: previous pass becomes stale",
-      "captured_seconds": 9.88
+      "captured_seconds": 10.027
     },
     {
       "label": "Real failing test: failure is shown",
-      "captured_seconds": 14.395
+      "captured_seconds": 13.012
     },
     {
       "label": "Chocolate changes mood, evidence stays failed",
-      "captured_seconds": 17.678
+      "captured_seconds": 17.368
     }
   ],
-  "candidate": "0.1.0-rc.1",
+  "version": "0.1.0",
+  "release_type": "stable",
   "host": "Claude Code 2.1.296",
   "os": "macOS 26.5.1",
   "node": "24.3.0",
@@ -35,7 +36,7 @@
   "model_calls": 0,
   "synthetic_data": true,
   "source_sha256": {
-    "core/companion.js": "983d672da2e0118cc5dfab43dce10b388a6159d11eddd7012d4beff0b9af9598",
+    "core/companion.js": "f831bc0bcf9ea1a244e576353152c8ada890392d9ef588b7ccc330fe134a7457",
     "core/snapshot.js": "6a6cb7de82535a23af841eaf01e72fba5bce639661b11f4064e3b68bd1f148e1",
     "core/evidence.js": "b20a9f98d301c033c389dfeceb4fd054223136f712348b64cd276622ae7a5de2",
     "hooks/register.js": "0a1c34bcab034eafb5bf258d2c004e474b6efe0a56ea7b1b70cabfb9c4bc65de",
@@ -49,20 +50,20 @@
   },
   "privacy_review": "All exported views contain only selected terminal cells, synthetic scope names, scalar evidence and public version information. Launcher, local paths, account details and command history omitted by fixed crops.",
   "files": {
-    "ernesto-cli-4.png": "43ac7a872c5cd486d0ca7c42a4d72ab9c926249f12b8a40b6765247f5d5fc45a",
-    "ernesto-cli-3.png": "651511ccbf30eded12e08f1022bfea07814ea086fcc7c4185fcf91da6479789b",
-    "ernesto-cli-2.png": "9c6086d4dc68fcc2b681ae254a8222728b32cc84b918f8dd62349070f04b436d",
-    "ernesto-cli-0.png": "01ee725e975b98fabdb3a4848c89dfe2e9ad3a03bba3837cb9329538feb66197",
+    "ernesto-cli-4.png": "d5c0e40b2ca1d31cc5e76128b0bf430b65e30313528bc52ce8ac23faf1871499",
+    "ernesto-cli-3.png": "c1d693bde4c96c355ce35c45f52540a9866c9d4a7a81b6438421be95c46f9a25",
+    "ernesto-cli-2.png": "1bea4d5771da76e27fdb7b85f313f680ab9803a0a3f570dfe0c5b29c9e652809",
+    "ernesto-cli-0.png": "3129c7dbb4951856195b33d2f09e9e5463f0bc7db4c787dfcbb0ee923fe535bb",
     "ernesto-cli-en.vtt": "4b21fbadd17d165dda17a2b8ce68d96c3ea66de22fcb0d6af1a01b50ece5699c",
-    "ernesto-cli-1.png": "df1cce0224a95a43011d22fa6b236c8b271e3fcc61f240f16a1d19096b3c1196",
+    "ernesto-cli-1.png": "62e4ac7d5dde779cd34eaa72e9c373bb77e2ca44c406977c946ae0c4e6647dd7",
     "ernesto-cli-zh.vtt": "aa0249c6f7557d9d8485539c385acf0a95c0cfcec6c70b61ec4aa2b6beef7513",
-    "ernesto-cli-candidate.mp4": "15202415fde0d98ff3ca7a511ba8bd53430d53ee00e70e103785473b436a59e1",
-    "ernesto-cli-de.md": "1319f0fc80105f7717bc3b78852e1dfa80363f80f9f4b47665ebd5f4a362a423",
-    "ernesto-cli-es.md": "454e421e145e1bbef7f5c542ff6d4729703cc060ec984c9da77d3990df17cf8e",
+    "ernesto-cli-candidate.mp4": "5c85be02c1cdec0700f9e765f43d7be0b13f440328ffef246c4d196f45f476d9",
+    "ernesto-cli-de.md": "4ddbd425ea9a806180829d5419b9985ddfbcdab9791cf141445cd2a6d7baf8a3",
+    "ernesto-cli-es.md": "84cc53b90a7c43d859b94863e8464e2fc6ea1608a7893673fc09dd12755677ef",
     "ernesto-cli-de.vtt": "ed390f20af307b1900de967175754a3a2920df44098f8075d9afa07b73209b07",
-    "ernesto-cli-poster.png": "df1cce0224a95a43011d22fa6b236c8b271e3fcc61f240f16a1d19096b3c1196",
+    "ernesto-cli-poster.png": "62e4ac7d5dde779cd34eaa72e9c373bb77e2ca44c406977c946ae0c4e6647dd7",
     "ernesto-cli-es.vtt": "791acb89b38584347ddd4a2a2d75da7c638a18ee76f04005a7f3b94147bedb3c",
-    "ernesto-cli-zh.md": "0de814a3ed0d22fc40d00dfb4d960ba938900b699e21865103036b9cd065f438",
-    "ernesto-cli-en.md": "b0ae369e6ca4f1d4199455b8366e02b33cd7fdfbd691fc518655285975ae7094"
+    "ernesto-cli-zh.md": "8f57286a5d0171fbc89abf306391dd5a53643f29aca9a8df0aafc4e7ab546acc",
+    "ernesto-cli-en.md": "c563b800b09cdfe866dbc553f668121d6b00c599286280080467e4c852a0c9cc"
   }
 }
