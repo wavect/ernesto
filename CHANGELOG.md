@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0, unreleased
+
+Guided `/ernesto setup` and `/ernesto doctor`; QA observation on by default;
+workspace on/off preferences retained across sessions; automatic connection to
+newly created config; explicit helper `--setup` and `--init` modes that generate
+conventional defaults without overwriting existing config. Runtime hooks remain
+read-only and never run tests. Existing QA aliases and strict evidence checks
+remain supported. This is a development candidate, not a published release.
+
 ## 0.1.0, 14 October 2026
 
 Initial stable version of the companion and optional scoped Vitest evidence.

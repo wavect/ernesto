@@ -26,7 +26,7 @@ These syntax floors are documented platform facts, not Ernesto support results f
 
 Companion mode needs no Node runtime, test runner or QA configuration. The separately invoked helper ships inside the plugin with its pure core modules. It requires **Node major 24** and the project's already installed **Vitest 4.1.11**, refuses other combinations, and never downloads a runner. The tested Node patch version is 24.3.0; other Node 24 patch versions have not been separately qualified.
 
-The host reads the reviewed runtime descriptor and installed Vitest version. It cannot independently establish the runtime of a future test process, environment secrets, native state or external services. Snapshots describe only captured inputs, with explicit exclusions and observation limits. Read [the evidence method](evidence.md) before enabling QA.
+The host reads the reviewed runtime descriptor and installed Vitest version. It cannot independently establish the runtime of a future test process, environment secrets, native state or external services. Snapshots describe only captured inputs, with explicit exclusions and observation limits. Review [the evidence method](evidence.md) and declared scope. Candidate 0.2.0 enables observation by default; `/ernesto qa off` remembers a workspace override.
 
 If an optional host facility is missing, use the text commands to inspect the limitation. Older/unsupported hosts refuse QA before project scans; no unavailable capability is converted into passing evidence. Disable/hide stops scheduled evidence work. No fallback launches a subprocess or makes a model/network call.
 

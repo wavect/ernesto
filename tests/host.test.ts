@@ -32,9 +32,9 @@ test('observes unchanged tool input and original result exactly once', async ($,
   expect(calls).toBe(1);
   const answer = await $.command.run({ command: 'ernesto', args: '' });
   expect(answer.text).not.toContain('private-token');
-  expect(answer.text).toContain('QA is off');
+  expect(answer.text).toContain('QA observation is on');
 });
-test('companion default never scans a project, runs a process, or changes evidence', async ($, on) => {
+test('controls never launch tests and companion-only mode remains available', async ($, on) => {
   stubs(on);
   await $.session.start({
     cwd: '/synthetic',
@@ -82,7 +82,9 @@ test('band retains other drawing; narrow layout gives text and survey yields', a
   });
   const ui = await $.ui.mount({ ...band, surface: 'terminal' });
   expect(await ui.find({ type: 'Text', text: 'host drawing' })).toBeDefined();
-  expect(await ui.find({ type: 'Text', text: /Companion mode/ })).toBeDefined();
+  expect(
+    await ui.find({ type: 'Text', text: /QA on.*setup needed/ }),
+  ).toBeDefined();
   await ui.unmount();
   const narrow = await $.ui.mount({
     ...band,
@@ -111,7 +113,8 @@ test('read-denied setup is useful, unknown and never runs shell text', async ($,
     isInteractive: false,
   });
   const setup = await $.command.run({ command: 'ernesto', args: 'qa setup' });
-  expect(setup.text).toContain('Create and review');
+  expect(setup.text).toContain('Project setup is needed');
+  expect(setup.text).toContain('--init');
   const enable = await $.command.run({ command: 'ernesto', args: 'qa enable' });
-  expect(enable.text).toContain('could not complete');
+  expect(enable.text).toContain('QA observation on; setup needed');
 });

@@ -11,10 +11,12 @@ const config = {
   filters: [],
   runtimeDescriptor: 'node-24/vitest-4.1.11',
 };
-async function fixture(on, hostVersion = '2.1.296') {
+async function fixture(on, hostVersion = '2.1.296', denyCommands = false) {
   const clock = mock.clock(on);
   mock.store(on);
-  on('command.register', () => ({ value: undefined }));
+  on('command.register', () =>
+    denyCommands ? { deny: 'Name already registered' } : { value: undefined },
+  );
   on('session.version', () => ({ value: { version: hostVersion } }));
   on('session.start', ($, e) => ({ cwd: e.cwd }));
   on('ui.open', () => ({ value: { isPlaced: true } }));
@@ -97,7 +99,7 @@ async function fixture(on, hostVersion = '2.1.296') {
     configHash: a.configHash,
     startedAt: 11,
   });
-  const control = { deny: false, seen: [] };
+  const control = { deny: false, seen: [], readGate: null, readEntered: null };
   on('fs.stat', async ($, e) => {
     control.seen.push(e.path);
     if (control.deny) return { deny: 'permission denied' };
@@ -130,14 +132,118 @@ async function fixture(on, hostVersion = '2.1.296') {
       kind: 'file',
     })),
   }));
-  on('fs.read', async ($, e) => ({
-    value: {
-      base64: btoa(files[e.path.slice(root.length + 1)]),
-      encoding: 'base64',
-    },
-  }));
+  on('fs.read', async ($, e) => {
+    if (control.readGate) {
+      control.readEntered?.();
+      await control.readGate;
+    }
+    return {
+      value: {
+        base64: btoa(files[e.path.slice(root.length + 1)]),
+        encoding: 'base64',
+      },
+    };
+  });
   return { files, control, record, clock, closed: () => closed };
 }
+test('startup command registration failure leaves evidence work stopped', async ($, on) => {
+  const f = await fixture(on, '2.1.296', true);
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(5000);
+  expect(f.control.seen.length).toBe(0);
+});
+
+test('QA observes an existing config by default without an enable command or any test process', async ($, on) => {
+  const f = await fixture(on);
+  let processes = 0;
+  on('process.run', () => {
+    processes++;
+    return { deny: 'No automatic processes' };
+  });
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  const status = await $.command.run({ command: 'ernesto', args: 'status' });
+  expect(status.text).toContain('passed · matched');
+  expect(status.text).toContain('Next:');
+  expect(status.text).not.toContain('Declared inputs:');
+  expect(status.text.length).toBeLessThan(1000);
+  expect(processes).toBe(0);
+});
+
+test('QA off persists across sessions and QA on restores the remembered workspace preference', async ($, on) => {
+  const f = await fixture(on);
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await $.command.run({ command: 'ernesto', args: 'qa off' });
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  const count = f.control.seen.length;
+  await f.clock.advance(5000);
+  expect(f.control.seen.length).toBe(count);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('QA is off');
+  await $.command.run({ command: 'ernesto', args: 'qa on' });
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+});
+
+test('missing config shows setup guidance and newly created config is picked up without restarting', async ($, on) => {
+  const f = await fixture(on);
+  const saved = f.files['.ernesto/config.json'];
+  delete f.files['.ernesto/config.json'];
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  const setup = await $.command.run({ command: 'ernesto', args: 'setup' });
+  expect(setup.text).toContain('--init');
+  expect(setup.text).toContain('--setup');
+  expect(setup.text).toContain('\nnode ');
+  expect(setup.text).toContain('Existing configuration is never overwritten');
+  expect(f.control.seen).not.toContain(root + '/src/a.js');
+  const status = await $.command.run({ command: 'ernesto', args: 'status' });
+  expect(status.text).toContain('QA observation is on');
+  expect(status.text).not.toContain('passed · matched');
+  f.files['.ernesto/config.json'] = saved;
+  await f.clock.advance(1600);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+});
+
+test('doctor explains runner requirements without executing a command or echoing malformed package content', async ($, on) => {
+  const f = await fixture(on);
+  f.files['node_modules/vitest/package.json'] = 'private broken package';
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  const result = await $.command.run({ command: 'ernesto', args: 'doctor' });
+  expect(result.text).toContain('npm install --save-dev vitest@4.1.11');
+  expect(result.text).toContain('Node.js 24');
+  expect(result.text).not.toContain('private broken package');
+  expect(f.control.seen).not.toContain(root + '/src/a.js');
+});
+
+test('turning QA off during startup discovery cannot re-enable it when the read completes', async ($, on) => {
+  const f = await fixture(on);
+  let release;
+  let entered;
+  f.control.readGate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const reading = new Promise((resolve) => {
+    entered = resolve;
+  });
+  f.control.readEntered = entered;
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  const pending = f.clock.advance(150);
+  await reading;
+  await $.command.run({ command: 'ernesto', args: 'qa off' });
+  release();
+  await pending;
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('QA is off');
+  expect(f.control.seen).not.toContain(root + '/src/a.js');
+});
 test('required read failure invalidates a previously matched result', async ($, on) => {
   const f = await fixture(on);
   await $.session.start({ cwd: root, surface: null, isInteractive: false });
@@ -197,7 +303,7 @@ test('source change makes the previous scoped result stale; chocolate preserves 
     (await $.command.run({ command: 'ernesto', args: 'evidence' })).text,
   ).toContain('passed · stale');
 });
-test('new workspace begins with QA off and cannot display prior workspace evidence', async ($, on) => {
+test('new workspace starts with independent QA setup and cannot display prior workspace evidence', async ($, on) => {
   const f = await fixture(on);
   await $.session.start({ cwd: root, surface: null, isInteractive: false });
   await $.command.run({ command: 'ernesto', args: 'qa enable' });
@@ -210,7 +316,7 @@ test('new workspace begins with QA off and cannot display prior workspace eviden
     isInteractive: false,
   });
   const answer = await $.command.run({ command: 'ernesto', args: 'evidence' });
-  expect(answer.text).toContain('QA is off');
+  expect(answer.text).toContain('QA observation is on');
   expect(answer.text).not.toContain(id);
 });
 test('foreign-worktree record cannot become a current passing result', async ($, on) => {
@@ -289,7 +395,7 @@ test('tall terminal uses approved pixel portrait and renders complete evidence d
   await $.command.run({ command: 'ernesto', args: 'qa enable' });
   const answer = await $.command.run({ command: 'ernesto', args: 'evidence' });
   for (const text of [
-    'Reviewed inputs: src',
+    'Declared inputs: src',
     'Scope: suite',
     '1 passed; 0 failed; 0 skipped; 0 todo',
     'Integrity: validated_local_record',
@@ -494,7 +600,7 @@ test('original tool errors, interruption and denials pass through exactly once w
     'original permission refusal',
   ])
     expect(answer.text).not.toContain(text);
-  expect(answer.text).toContain('QA is off');
+  expect(answer.text).toContain('QA observation is on');
 });
 
 test('concurrent tool reentry preserves each original result and executes each once', async ($, on) => {

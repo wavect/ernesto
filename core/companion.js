@@ -1,7 +1,9 @@
-export const HELP = `Ernesto 0.1.0, Wavect companion for Claude Code.
+export const HELP = `Ernesto 0.2.0, Wavect companion for Claude Code.
+/ernesto setup | doctor | status
 /ernesto evidence | refresh | hide | show | chocolate
 /ernesto quiet on|off | motion reduced|normal
-/ernesto qa setup | qa enable | qa off | forget confirm
+/ernesto qa on|off | qa setup | qa enable | forget confirm
+QA observation defaults on. Your on/off choice is remembered for this workspace.
 Companion mood is independent of evidence. No automatic tests, installs, model calls or telemetry.`;
 export function parseCommand(args) {
   if (
@@ -12,10 +14,14 @@ export function parseCommand(args) {
     return { action: 'invalid' };
   const words = args.trim().split(/\s+/);
   const s = words.join(' ');
-  if (!s || s === 'help' || s === 'status') return { action: 'help' };
+  if (!s || s === 'help') return { action: 'help' };
+  if (s === 'status') return { action: 'status' };
+  if (s === 'setup' || s === 'qa setup') return { action: 'setup' };
+  if (s === 'doctor') return { action: 'doctor' };
+  if (s === 'qa on') return { action: 'qa enable' };
   if (['evidence', 'refresh', 'hide', 'show', 'chocolate'].includes(s))
     return { action: s };
-  if (['qa setup', 'qa enable', 'qa off', 'forget confirm'].includes(s))
+  if (['qa enable', 'qa off', 'forget confirm'].includes(s))
     return { action: s };
   if (s === 'forget') return { action: 'forget' };
   if (/^quiet (on|off)$/.test(s))

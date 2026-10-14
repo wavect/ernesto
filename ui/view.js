@@ -1,20 +1,39 @@
 import { mascotPose, mascotCells, POSE_CAPTIONS } from './mascot.js';
 import { safeText } from '../core/companion.js';
-export function evidenceText(qa, enabled) {
-  if (!enabled) return 'Companion mode, QA off. /ernesto qa setup';
+export function evidenceText(qa, enabled, configured = true) {
+  if (!enabled) return 'Companion mode, QA off. /ernesto qa on';
+  if (!configured) return 'QA on · setup needed. /ernesto setup';
   const d = qa || {};
   return `QA: ${safeText(d.outcome || 'not_run')} · ${safeText(d.freshness || 'unknown')} · ${safeText(d.completeness || 'unknown')}`;
 }
+export function statusText(qa, enabled, config) {
+  if (!enabled)
+    return 'QA is off. /ernesto qa on resumes observation for this workspace.';
+  if (!config)
+    return 'QA observation is on. Setup needed: /ernesto setup gives the exact local command. /ernesto doctor checks requirements. No tests run automatically.';
+  return (
+    evidenceText(qa, true) +
+    '\n' +
+    safeText(qa?.reason || 'No supported check observed.') +
+    '\nNext: ' +
+    (qa?.record
+      ? 'use /ernesto evidence for scope and snapshot details; /ernesto setup shows the command to rerun the check.'
+      : 'run the explicit helper shown by /ernesto setup, then /ernesto evidence.') +
+    '\n/ernesto qa off pauses observation and remembers your choice.'
+  );
+}
 export function detailsText(qa, enabled, config = null) {
   if (!enabled)
-    return 'QA is off. Setup previews the scope and explicit helper command before enabling.';
+    return 'QA is off. /ernesto qa on resumes observation for this workspace. /ernesto setup shows the local setup and check commands.';
+  if (!config)
+    return 'QA observation is on. Setup needed: /ernesto setup prints the exact local command to create defaults and run your first check. Use /ernesto doctor for requirements. No tests run automatically. No recorded result means not run.';
   const r = qa?.record;
   return [
     evidenceText(qa, true),
     safeText(qa?.reason || 'No supported check observed.'),
     `Integrity: ${safeText(qa?.integrity || 'unsupported')}`,
     config
-      ? `Reviewed inputs: ${config.scope.roots.map((x) => safeText(x)).join(', ')}`
+      ? `Declared inputs: ${config.scope.roots.map((x) => safeText(x)).join(', ')}`
       : '',
     r
       ? `Scope: ${safeText(r.scope.kind)}${r.scope.filters.length ? ': ' + r.scope.filters.map((x) => safeText(x)).join(', ') : ': configured suite'}`
@@ -31,7 +50,7 @@ export function detailsText(qa, enabled, config = null) {
     r ? `Result observed: ${new Date(r.endedAt).toISOString()}` : '',
     `Last comparison: ${qa?.lastComparedAt != null ? new Date(qa.lastComparedAt).toISOString() : 'not compared'}`,
     r ? `Snapshot: ${safeText(r.endSnapshot?.digest || '')}` : '',
-    'Scope comes from the reviewed project config. External services, time, secrets and ignored inputs are outside it.',
+    'Scope comes from the project config; review generated defaults for custom inputs. External services, time, secrets and ignored inputs are outside it.',
     'Local records can be fabricated by the same user. Endpoint matches do not prove immutable execution.',
   ]
     .filter(Boolean)
@@ -41,7 +60,7 @@ export function drawBand(elements, e, theirs, state, pluginRoot) {
   const { Box, Text, Image, Raster } = elements;
   const pose = mascotPose(state.mood, state.qa, state.enabled);
   const width = e.props.bodyColumns || e.viewport.columns;
-  const summary = evidenceText(state.qa, state.enabled);
+  const summary = evidenceText(state.qa, state.enabled, Boolean(state.config));
   const children = [theirs];
   if (width < 56 || e.props.maxRows < 2)
     children.push(Text({ children: [`Ernesto · ${summary}`] }));

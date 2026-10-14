@@ -1,8 +1,20 @@
 # Release verification and recovery
 
-Implementation version: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
+Implementation candidate: **0.2.0, unreleased**. Published stable: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
 
-The release includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
+The published 0.1.0 release includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
+
+## 0.2.0 candidate scope
+
+The candidate changes onboarding and default observation. QA defaults on,
+remembers per-workspace overrides and connects to valid config automatically.
+The explicit helper can generate defaults with `--setup` or initialize and run
+with `--init`; existing config is preserved. The hook runtime still performs no
+project writes or automatic test execution. Fresh installation, upgrade from
+0.1.0, requirements, persistence and package checks must be recorded for this
+candidate separately. The existing recording captures historical 0.1.0 behavior,
+including QA-off startup; it does not demonstrate the new first-run flow.
+No new release, tag or website availability claim is established by this branch.
 
 ## Reviewable evidence
 
