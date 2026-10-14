@@ -6,13 +6,14 @@ The published 0.1.0 release includes companion controls, optional scoped Vitest 
 
 ## 0.2.0 candidate scope
 
-The candidate changes onboarding and default observation. QA defaults on,
+The candidate changes onboarding, default observation and terminal presentation. QA defaults on,
 remembers per-workspace overrides and connects to valid config automatically.
 The explicit helper can generate defaults with `--setup` or initialize and run
 with `--init`; existing config is preserved. The hook runtime still performs no
 project writes or automatic test execution. Fresh installation, upgrade from
 0.1.0, requirements, persistence and package checks must be recorded for this
-candidate separately. The existing recording captures historical 0.1.0 behavior,
+candidate separately. The redesigned companion and evidence pane require their own narrow/wide, theme,
+keyboard and reduced-motion checks. The existing recording captures historical 0.1.0 behavior,
 including QA-off startup; it does not demonstrate the new first-run flow.
 No new release, tag or website availability claim is established by this branch.
 

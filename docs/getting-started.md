@@ -53,6 +53,14 @@ QA observation is on by default. It picks up valid configuration and local
 records automatically, including config created while the session is open.
 `/ernesto refresh` asks for an immediate comparison; it does not run tests.
 
+The pane separates the summary, test counts and next step. Choose **Scope &
+record (d)** to expand declared inputs, exclusions, timestamps and identifiers.
+**Compare (r)** rechecks inputs without starting tests. **Close (q)** or Escape
+returns to your prompt. If focus stays in the prompt, press Ctrl+X then Tab
+before using the pane hotkeys. Page Down scrolls long content; Ctrl+X then Up
+expands an inline pane. These are Claude Code's terminal keyboard controls.
+Compact windows retain the evidence summary and use less decoration.
+
 - **Setup needed:** no usable config yet. Run `/ernesto setup`.
 - **Not run:** configuration exists but no supported result was recorded.
 - **Passed / matched:** the declared check passed and captured inputs matched

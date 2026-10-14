@@ -101,10 +101,12 @@ function createContext(options) {
       qa: initialEvidence(),
       enabled: false,
       frame: 0,
+      detailsExpanded: false,
     },
     supported: false,
     cwd: '',
     surface: null,
+    interactive: false,
     key: '',
     timer: null,
     animation: null,
@@ -409,6 +411,7 @@ export function register(on, options = {}) {
     stop(ctx);
     ctx.cwd = e.cwd;
     ctx.surface = e.surface;
+    ctx.interactive = e.isInteractive === true;
     ctx.key = 'v1.' + sha256('ernesto-preferences\0' + ctx.cwd);
     ctx.state.enabled = false;
     ctx.state.qa = initialEvidence();
@@ -596,12 +599,14 @@ export function register(on, options = {}) {
           await $.ui.open({
             id: 'ernesto-evidence',
             title: 'Ernesto evidence',
+            rows: 28,
             focus: true,
             closeOnEscape: true,
           });
-        return {
-          text: detailsText(ctx.state.qa, ctx.state.enabled, ctx.config),
-        };
+        return ctx.interactive &&
+          (ctx.surface === 'terminal' || ctx.surface === 'desktop')
+          ? {}
+          : { text: detailsText(ctx.state.qa, ctx.state.enabled, ctx.config) };
       }
     } catch {
       ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
@@ -633,6 +638,10 @@ export function register(on, options = {}) {
           { ...ctx.state, config: ctx.config },
           () => refresh($, ctx),
           () => $.ui.close({ id: 'ernesto-evidence' }),
+          () => {
+            ctx.state.detailsExpanded = !ctx.state.detailsExpanded;
+            invalidate($);
+          },
         )
       : next(e),
   );

@@ -7,7 +7,11 @@ workspace on/off preferences retained across sessions; automatic connection to
 newly created config; explicit helper `--setup` and `--init` modes that generate
 conventional defaults without overwriting existing config. Runtime hooks remain
 read-only and never run tests. Existing QA aliases and strict evidence checks
-remain supported. This is a development candidate, not a published release.
+remain supported. The companion gains compact terminal pixel art, a steady
+portrait during routine comparisons and a structured evidence pane with test
+counts, next steps and an expandable scope/record section. Narrow layouts keep
+controls and evidence ahead of decoration. This is a development candidate,
+not a published release.
 
 ## 0.1.0, 14 October 2026
 

@@ -77,8 +77,16 @@ installation, scopes, updates and removal.
 ```
 
 `qa setup` and `qa enable` remain aliases for existing users. Reduced motion
-stays the default. The evidence pane opens on request; use Refresh, Close or
-Escape. Chocolate changes only the companion mood. Forget clears workspace
+stays the default. The companion uses a turquoise pixel portrait when space allows,
+with a compact portrait and text fallback in smaller terminals. Routine input
+comparisons keep his expression steady while freshness remains explicitly labeled.
+In an interactive session, `/ernesto evidence` opens the pane without dumping
+the record into your conversation. Non-interactive sessions retain the full text
+response. The pane leads with the result, completion, counts and next action;
+**Scope & record (d)** expands the full input list and record identifiers.
+Use **Compare (r)** to compare inputs, **Close (q)** or Escape to close.
+If the prompt keeps keyboard focus, press Ctrl+X then Tab; Page Down scrolls
+long evidence, and Ctrl+X then Up gives an inline pane more room. Chocolate changes only the companion mood. Forget clears workspace
 preferences and pauses QA for the current session; defaults apply next session.
 It never removes project files.
 

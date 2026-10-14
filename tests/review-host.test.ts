@@ -375,6 +375,24 @@ test('evidence pane refresh and close controls work without model interaction', 
     await pane.find({ type: 'Text', text: /passed · matched/ }),
   ).toBeDefined();
   expect(await pane.find({ type: 'Button', key: 'refresh' })).toBeDefined();
+  expect(
+    await pane.find({ type: 'Text', text: /1 passed · 0 failed/ }),
+  ).toBeDefined();
+  expect(
+    await pane.find({ type: 'Text', text: /Recorded check:/ }),
+  ).toBeUndefined();
+  await pane.press({ key: 'details' });
+  expect(
+    await pane.find({ type: 'Text', text: /Recorded check:/ }),
+  ).toBeDefined();
+  expect(
+    await pane.find({ type: 'Text', text: /Declared inputs: src/ }),
+  ).toBeDefined();
+  await pane.press({ key: 'details' });
+  expect(
+    await pane.find({ type: 'Text', text: /Recorded check:/ }),
+  ).toBeUndefined();
+
   f.files['src/a.js'] = 'changed';
   await pane.press({ key: 'refresh' });
   expect(
@@ -394,15 +412,33 @@ test('tall terminal uses approved pixel portrait and renders complete evidence d
   });
   await $.command.run({ command: 'ernesto', args: 'qa enable' });
   const answer = await $.command.run({ command: 'ernesto', args: 'evidence' });
+  expect(answer.text).toBeUndefined();
+  const pane = await $.ui.mount({
+    plugin: 'ernesto',
+    surface: 'terminal',
+    component: 'Pane',
+    requestId: 'ernesto-evidence',
+    viewport: { columns: 80, rows: 30 },
+    props: {
+      title: 'Ernesto evidence',
+      isFocused: true,
+      bodyColumns: 78,
+      bodyRows: 28,
+      scroll: { offset: 0, bodyRows: 28 },
+      view: {},
+    },
+  });
+  await pane.press({ key: 'details' });
   for (const text of [
-    'Declared inputs: src',
-    'Scope: suite',
-    '1 passed; 0 failed; 0 skipped; 0 todo',
-    'Integrity: validated_local_record',
-    'Excluded:',
-    'Last comparison: 1970-01-01',
+    /Declared inputs: src/,
+    /Scope: suite/,
+    /1 passed; 0 failed; 0 skipped; 0 todo/,
+    /Integrity: validated_local_record/,
+    /Excluded:/,
+    /Last comparison: 1970-01-01/,
   ])
-    expect(answer.text).toContain(text);
+    expect(await pane.find({ type: 'Text', text })).toBeDefined();
+  await pane.unmount();
   const band = await $.ui.mount({
     plugin: 'ernesto',
     surface: 'terminal',
