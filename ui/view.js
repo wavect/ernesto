@@ -1,32 +1,50 @@
+import { commandSummary, commandDetails } from '../core/project.js';
 import { mascotPose, mascotCells, POSE_CAPTIONS } from './mascot.js';
 import { safeText } from '../core/companion.js';
 export function evidenceText(qa, enabled, configured = true) {
   if (!enabled) return 'Companion mode, QA off. /ernesto qa on';
-  if (!configured) return 'QA on · setup needed. /ernesto setup';
+  if (!configured) return 'Companion ready · checks on request';
   const d = qa || {};
   return `QA: ${safeText(d.outcome || 'not_run')} · ${safeText(d.freshness || 'unknown')} · ${safeText(d.completeness || 'unknown')}`;
 }
-export function statusText(qa, enabled, config) {
+export function statusText(qa, enabled, config, project = null, run = null) {
   if (!enabled)
     return 'QA is off. /ernesto qa on resumes observation for this workspace.';
+  if (run && (run.kind === 'command' || run.status === 'running'))
+    return commandDetails(run);
   if (!config)
-    return 'QA observation is on. Setup needed: /ernesto setup gives the exact local command. /ernesto doctor checks requirements. No tests run automatically.';
+    return (
+      'Ernesto is ready. QA observation is on. ' +
+      (project && project.kind !== 'none'
+        ? 'Detected: ' +
+          project.label +
+          '. Choose Check project or /ernesto check.'
+        : 'The companion needs no setup. Project checks are available when a test/check command is detected.') +
+      ' No tests run automatically.'
+    );
   return (
     evidenceText(qa, true) +
     '\n' +
     safeText(qa?.reason || 'No supported check observed.') +
     '\nNext: ' +
     (qa?.record
-      ? 'use /ernesto evidence for scope and snapshot details; /ernesto setup shows the command to rerun the check.'
-      : 'run the explicit helper shown by /ernesto setup, then /ernesto evidence.') +
+      ? 'use /ernesto evidence for details; /ernesto check runs the next project check.'
+      : 'choose Check project or /ernesto check, then inspect /ernesto evidence.') +
     '\n/ernesto qa off pauses observation and remembers your choice.'
   );
 }
-export function detailsText(qa, enabled, config = null) {
+export function detailsText(
+  qa,
+  enabled,
+  config = null,
+  project = null,
+  run = null,
+) {
   if (!enabled)
-    return 'QA is off. /ernesto qa on resumes observation for this workspace. /ernesto setup shows the local setup and check commands.';
-  if (!config)
-    return 'QA observation is on. Setup needed: /ernesto setup prints the exact local command to create defaults and run your first check. Use /ernesto doctor for requirements. No tests run automatically. No recorded result means not run.';
+    return 'QA is off. /ernesto qa on resumes observation for this workspace.';
+  if (run && (run.kind === 'command' || run.status === 'running'))
+    return commandDetails(run, true);
+  if (!config) return statusText(qa, enabled, config, project);
   const r = qa?.record;
   return [
     evidenceText(qa, true),
@@ -60,22 +78,33 @@ export function detailsText(qa, enabled, config = null) {
 const ACCENT = '#168b96';
 export function nextStep(qa, enabled, config) {
   if (!enabled) return '/ernesto qa on resumes observation.';
-  if (!config) return '/ernesto setup gets you started.';
+  if (!config)
+    return 'Choose Check project or /ernesto check. No setup required.';
   if (qa?.outcome === 'running')
     return 'Wait for the explicitly started check to finish.';
   if (qa?.freshness === 'checking')
     return 'Comparing inputs. No tests are being started.';
   if (qa?.freshness === 'stale')
-    return 'Inputs changed. /ernesto setup shows the rerun command.';
+    return 'Inputs changed. Choose Check project to run the check again.';
   if (qa?.outcome === 'failed')
-    return 'Inspect the test failure, then rerun the explicit helper.';
+    return 'Inspect the test failure, then choose Check project to run again.';
   if (
     qa?.outcome === 'passed' &&
     qa?.freshness === 'matched' &&
     qa?.completeness === 'complete'
   )
     return 'Snapshot matched at the last comparison. Review the scope below.';
-  return '/ernesto setup shows the check command; review any gaps in the evidence.';
+  return 'Choose Check project or /ernesto check; review any gaps in the evidence.';
+}
+export function summaryText(state) {
+  if (!state.enabled) return evidenceText(state.qa, false);
+  const run = state.projectRun;
+  if (run && (run.kind === 'command' || run.status === 'running'))
+    return commandSummary(run);
+  if (state.config) return evidenceText(state.qa, true);
+  return state.project && state.project.kind !== 'none'
+    ? 'Ready · ' + state.project.label
+    : 'Ready · companion active';
 }
 function companionCaption(state) {
   // Personality is independent of periodic snapshot comparison and evidence claims.
@@ -90,19 +119,34 @@ function portrait(elements, e, state, compact = false) {
     columns: compact ? 12 : 18,
     rows: compact ? 3 : 5,
     cells: mascotCells(
-      mascotPose(state.mood, state.qa, state.enabled),
+      mascotPose(
+        state.mood,
+        state.projectRun?.kind === 'command' ||
+          state.projectRun?.status === 'running'
+          ? {
+              outcome:
+                state.projectRun.status === 'failed'
+                  ? 'failed'
+                  : state.projectRun.status === 'running'
+                    ? 'running'
+                    : 'unknown',
+              freshness: state.projectRun.freshness,
+            }
+          : state.qa,
+        state.enabled,
+      ),
       state.prefs.reducedMotion ? 0 : state.frame,
       compact,
     ),
   });
 }
-export function drawBand(elements, e, theirs, state) {
+export function drawBand(elements, e, theirs, state, checkProject) {
   const { Box, Text } = elements;
   const width = e.props.bodyColumns || e.viewport?.columns || 40;
   // Reserve a row for the host drawing instead of pushing it out of the band.
   const rows = Math.max(0, (e.props.maxRows ?? 1) - (theirs ? 1 : 0));
   if (!rows) return theirs;
-  const summary = evidenceText(state.qa, state.enabled, Boolean(state.config));
+  const summary = summaryText(state);
   if (width < 48 || rows === 1)
     return Box({
       flexDirection: 'column',
@@ -123,15 +167,35 @@ export function drawBand(elements, e, theirs, state) {
     line('Ernesto', { bold: true, color: ACCENT }),
     line(summary, { key: 'ernesto-summary' }),
   ];
-  if (rows >= 3)
-    lines.push(
-      line(
-        state.config && state.enabled
-          ? '/ernesto evidence · inspect result & scope'
-          : nextStep(state.qa, state.enabled, state.config),
-        { dimColor: true },
-      ),
-    );
+  if (rows >= 3) {
+    if (
+      state.enabled &&
+      state.project?.kind &&
+      state.project.kind !== 'none' &&
+      state.projectRun?.status !== 'running' &&
+      typeof checkProject === 'function'
+    )
+      lines.push(
+        elements.Button({
+          key: 'check',
+          hotkey: 't',
+          plain: true,
+          label: 'Check project',
+          onPress: checkProject,
+        }),
+      );
+    else
+      lines.push(
+        line(
+          state.projectRun?.status === 'running'
+            ? 'Project check running...'
+            : state.config
+              ? '/ernesto evidence · inspect result & scope'
+              : '/ernesto · companion controls',
+          { dimColor: true },
+        ),
+      );
+  }
   if (rows >= 5 && !state.prefs.quiet)
     lines.push(line(companionCaption(state), { italic: true }));
   return Box({
@@ -154,13 +218,25 @@ export function drawBand(elements, e, theirs, state) {
     ],
   });
 }
-export function drawPane(elements, e, state, refresh, close, toggleDetails) {
+export function drawPane(
+  elements,
+  e,
+  state,
+  refresh,
+  close,
+  toggleDetails,
+  checkProject,
+) {
   const { Box, Text, Button } = elements;
   const width = e.props.bodyColumns || e.viewport?.columns || 40;
   const qa = state.qa;
+  const run = state.projectRun;
+  const commandOnly = Boolean(
+    run && (run.kind === 'command' || run.status === 'running'),
+  );
   const narrow = width < 60;
   const short = (e.props.scroll?.bodyRows || e.props.bodyRows || 12) < 20;
-  const record = state.enabled ? qa?.record : null;
+  const record = state.enabled && !commandOnly ? qa?.record : null;
   const text = (value, props = {}) => Text({ ...props, children: [value] });
   const section = (title, children) =>
     Box({
@@ -199,36 +275,57 @@ export function drawPane(elements, e, state, refresh, close, toggleDetails) {
       ],
     }),
     Box({
-      flexDirection: 'row',
-      gap: 1,
+      flexDirection: narrow ? 'column' : 'row',
+      gap: narrow ? 0 : 1,
       children: [
-        Button({
-          key: 'refresh',
-          hotkey: 'r',
-          autoFocus: true,
-          ...(narrow ? { plain: true } : {}),
-          label: narrow ? 'Compare' : 'Compare (r)',
-          onPress: refresh,
-        }),
-        Button({
-          key: 'details',
-          hotkey: 'd',
-          ...(narrow ? { plain: true } : {}),
-          label: narrow
-            ? state.detailsExpanded
-              ? 'Hide'
-              : 'Scope'
-            : state.detailsExpanded
-              ? 'Hide record (d)'
-              : 'Scope & record (d)',
-          onPress: toggleDetails,
-        }),
-        Button({
-          key: 'close',
-          hotkey: 'q',
-          ...(narrow ? { plain: true } : {}),
-          label: narrow ? 'Close' : 'Close (q)',
-          onPress: close,
+        ...(state.enabled &&
+        state.project &&
+        state.project.kind !== 'none' &&
+        run?.status !== 'running' &&
+        typeof checkProject === 'function'
+          ? [
+              Button({
+                key: 'check',
+                hotkey: 't',
+                plain: true,
+                label: narrow ? 'Check' : 'Check project',
+                onPress: checkProject,
+              }),
+            ]
+          : []),
+        Box({
+          flexDirection: 'row',
+          gap: 1,
+          children: [
+            Button({
+              key: 'refresh',
+              hotkey: 'r',
+              autoFocus: true,
+              ...(narrow ? { plain: true } : {}),
+              label: narrow ? 'Compare' : 'Compare (r)',
+              onPress: refresh,
+            }),
+            Button({
+              key: 'details',
+              hotkey: 'd',
+              ...(narrow ? { plain: true } : {}),
+              label: narrow
+                ? state.detailsExpanded
+                  ? 'Less'
+                  : 'Details'
+                : state.detailsExpanded
+                  ? 'Less (d)'
+                  : 'Details (d)',
+              onPress: toggleDetails,
+            }),
+            Button({
+              key: 'close',
+              hotkey: 'q',
+              ...(narrow ? { plain: true } : {}),
+              label: narrow ? 'Close' : 'Close (q)',
+              onPress: close,
+            }),
+          ],
         }),
       ],
     }),
@@ -239,14 +336,21 @@ export function drawPane(elements, e, state, refresh, close, toggleDetails) {
       flexDirection: 'column',
       children: [
         text(
-          narrow && state.enabled && state.config
+          narrow && state.enabled && state.config && !commandOnly
             ? `QA: ${safeText(qa?.outcome || 'not_run')} · ${safeText(qa?.freshness || 'unknown')}`
-            : evidenceText(qa, state.enabled, Boolean(state.config)),
+            : summaryText(state),
           {
             bold: true,
           },
         ),
-        ...(state.enabled && state.config
+        ...(commandOnly && run.status !== 'running'
+          ? [
+              text('Test counts and coverage: not verified.', {
+                dimColor: true,
+              }),
+            ]
+          : []),
+        ...(state.enabled && state.config && !commandOnly
           ? [
               text(
                 'Completion: ' +
@@ -268,7 +372,7 @@ export function drawPane(elements, e, state, refresh, close, toggleDetails) {
     // The summary must fit before controls and metadata in an eight-row inline pane.
     [children[1], children[2]] = [children[2], children[1]];
     children.push(text('PgDn: more · Esc: close', { dimColor: true }));
-    if (state.enabled && state.config)
+    if (state.enabled && state.config && !commandOnly)
       children.push(
         text('Integrity: ' + safeText(qa?.integrity || 'unsupported')),
         text(safeText(qa?.reason || 'No supported check observed.')),
@@ -286,9 +390,17 @@ export function drawPane(elements, e, state, refresh, close, toggleDetails) {
       ]),
     );
   children.push(
-    section('NEXT STEP', [text(nextStep(qa, state.enabled, state.config))]),
+    section('NEXT STEP', [
+      text(
+        commandOnly
+          ? run.status === 'running'
+            ? 'Running the project check you requested.'
+            : 'Choose Check project to run again. Details shows the last command output.'
+          : nextStep(qa, state.enabled, state.config),
+      ),
+    ]),
   );
-  if (state.config && state.enabled)
+  if (state.config && state.enabled && !commandOnly)
     children.push(
       section('SCOPE', [
         text(
@@ -301,8 +413,11 @@ export function drawPane(elements, e, state, refresh, close, toggleDetails) {
     );
   if (state.detailsExpanded)
     children.push(
-      section('SCOPE & RECORD', [
-        text(detailsText(qa, state.enabled, state.config)),
+      section('CHECK DETAILS', [
+        ...(run?.output
+          ? [text('LAST COMMAND OUTPUT', { bold: true }), text(run.output)]
+          : []),
+        text(detailsText(qa, state.enabled, state.config, state.project, run)),
       ]),
     );
   children.push(

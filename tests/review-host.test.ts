@@ -189,17 +189,17 @@ test('QA off persists across sessions and QA on restores the remembered workspac
   ).toContain('passed · matched');
 });
 
-test('missing config shows setup guidance and newly created config is picked up without restarting', async ($, on) => {
+test('missing config needs no setup and newly created config is picked up without restarting', async ($, on) => {
   const f = await fixture(on);
   const saved = f.files['.ernesto/config.json'];
   delete f.files['.ernesto/config.json'];
   await $.session.start({ cwd: root, surface: null, isInteractive: false });
   await f.clock.advance(150);
   const setup = await $.command.run({ command: 'ernesto', args: 'setup' });
-  expect(setup.text).toContain('--init');
-  expect(setup.text).toContain('--setup');
-  expect(setup.text).toContain('\nnode ');
-  expect(setup.text).toContain('Existing configuration is never overwritten');
+  expect(setup.text).toContain('No setup required');
+  expect(setup.text).toContain('/ernesto check');
+  expect(setup.text).not.toContain('--init');
+  expect(setup.text).not.toContain('\nnode ');
   expect(f.control.seen).not.toContain(root + '/src/a.js');
   const status = await $.command.run({ command: 'ernesto', args: 'status' });
   expect(status.text).toContain('QA observation is on');
@@ -216,8 +216,8 @@ test('doctor explains runner requirements without executing a command or echoing
   f.files['node_modules/vitest/package.json'] = 'private broken package';
   await $.session.start({ cwd: root, surface: null, isInteractive: false });
   const result = await $.command.run({ command: 'ernesto', args: 'doctor' });
-  expect(result.text).toContain('npm install --save-dev vitest@4.1.11');
-  expect(result.text).toContain('Node.js 24');
+  expect(result.text).toContain('No dependencies are installed');
+  expect(result.text).toContain('Node 24 / Vitest 4.1.11');
   expect(result.text).not.toContain('private broken package');
   expect(f.control.seen).not.toContain(root + '/src/a.js');
 });
@@ -729,4 +729,25 @@ test('terminal claims of passing tests do not create structured QA evidence', as
   expect(answer.text).not.toContain('QA: passed');
   expect(answer.text).not.toContain('99 passed');
   expect(answer.text).not.toContain('private stdout');
+});
+
+test('failed explicit Vitest launch cannot reuse an earlier passing record as its new result', async ($, on) => {
+  const f = await fixture(on);
+  on('process.run', () => ({
+    value: {
+      exitCode: 1,
+      stdout: '',
+      stderr: 'runner failed before new record',
+    },
+  }));
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+  await $.command.run({ command: 'ernesto', args: 'check' });
+  const status = await $.command.run({ command: 'ernesto', args: 'status' });
+  expect(status.text).toContain('failed (exit 1)');
+  expect(status.text).not.toContain('passed · matched');
+  expect(status.text).not.toContain('runner failed before new record');
 });

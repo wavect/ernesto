@@ -1,7 +1,7 @@
 {
   "name": "ernesto",
-  "version": "0.2.0",
-  "description": "Wavect companion with guided setup and scoped Vitest evidence",
+  "version": "0.3.0",
+  "description": "Ready-to-use Wavect companion with one-action project checks and scoped Vitest evidence",
   "author": {
     "name": "Wavect GmbH"
   },
@@ -30,7 +30,7 @@
     "qa": {
       "type": "boolean",
       "title": "QA observation",
-      "description": "Watch configured local evidence by default. Never runs tests. /ernesto qa off remembers a workspace override.",
+      "description": "Discover checks and observe local evidence by default. Tests run only when you choose Check project. /ernesto qa off remembers a workspace override.",
       "default": true
     }
   },
