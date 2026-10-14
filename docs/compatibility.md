@@ -1,8 +1,8 @@
-# Compatibility of the review candidate
+# Compatibility
 
-Ernesto **0.1.0-rc.1** is a prerelease candidate. The [versioned release record](https://github.com/wavect/ernesto/releases) identifies its publication status and approved artifact. The tested mod baseline is **Claude Code 2.1.296**. Future host versions still require validation; a version comparison alone is not proof that every surface works.
+Ernesto **0.1.0** retains the tested terminal companion and evidence behavior. The [versioned release record](https://github.com/wavect/ernesto/releases) identifies its publication status and approved artifact. The tested mod baseline is **Claude Code 2.1.296**. Future host versions still require validation; a version comparison alone is not proof that every surface works.
 
-| Environment | Candidate evidence | Support claim |
+| Environment | Recorded evidence | Support claim |
 | --- | --- | --- |
 | Terminal CLI, macOS 26.5.1, arm64, Claude Code 2.1.296 | Installed declarations inspected; strict plugin/marketplace validation; official host harness; real public-source installation, fresh-session loading and installed helper checked | Tested terminal combination; released artifact must match the versioned release record |
 | Node.js 24.3.0, project-local Vitest 4.1.11 | Real synthetic pass/fail, scope comparisons, omissions, interruptions, concurrent runs and malformed-artifact regressions | Verified explicit helper combination |

@@ -15,14 +15,50 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.3.0'
-      - run: npm ci --ignore-scripts --legacy-peer-deps
-      - run: npm ci --ignore-scripts --legacy-peer-deps
+      - id: dependencies
+        run: npm ci --ignore-scripts --legacy-peer-deps
+      - id: fixture_dependencies
+        run: npm ci --ignore-scripts --legacy-peer-deps
         working-directory: examples/vitest-demo
-      - run: npm run format:check
-      - run: npm test
-      - run: git diff --exit-code -- examples/vitest-demo
-      - run: npm run test:host
-      - run: npm run validate
-      - run: npm audit --audit-level=moderate
-      - run: python3 scripts/package.py
-      - run: git diff --check
+      - id: format
+        run: npm run format:check
+      - id: tests
+        run: npm test
+      - id: fixture_clean
+        run: git diff --exit-code -- examples/vitest-demo
+      - id: host
+        run: npm run test:host
+      - id: validate
+        run: npm run validate
+      - id: audit
+        run: npm audit --audit-level=moderate
+      - id: package
+        run: python3 scripts/package.py
+      - id: whitespace
+        run: git diff --check
+      - name: Record sanitized failure status
+        id: failure_receipt
+        if: failure()
+        env:
+          CI_SOURCE_SHA: ${{ github.sha }}
+          CI_EVENT: ${{ github.event_name }}
+          CI_DEPENDENCIES_OUTCOME: ${{ steps.dependencies.outcome }}
+          CI_FIXTURE_DEPENDENCIES_OUTCOME: ${{ steps.fixture_dependencies.outcome }}
+          CI_FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          CI_TESTS_OUTCOME: ${{ steps.tests.outcome }}
+          CI_FIXTURE_CLEAN_OUTCOME: ${{ steps.fixture_clean.outcome }}
+          CI_HOST_OUTCOME: ${{ steps.host.outcome }}
+          CI_VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
+          CI_AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          CI_PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          CI_WHITESPACE_OUTCOME: ${{ steps.whitespace.outcome }}
+        run: node scripts/ci-failure-summary.mjs
+      - name: Archive sanitized failure status
+        if: failure() && steps.failure_receipt.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ernesto-ci-failure-status
+          path: .agent-cache/ci-failure/summary.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

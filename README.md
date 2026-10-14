@@ -6,14 +6,14 @@ Ernesto is Wavect's small turquoise-shell companion, with two eyes, a taste for
 chocolate, and optional **scoped Vitest evidence**. Companion mode needs no QA
 configuration. Mood and chocolate never determine test status.
 
-**Version 0.1.0-rc.1 is a prerelease candidate.** Check the
+**Version 0.1.0.** Check the
 [versioned release record](https://github.com/wavect/ernesto/releases) for
 publication status, approved checksums and tested limitations. A source branch
 or successful source installation alone does not establish an approved release.
 GitHub marketplace distribution needs no Anthropic directory listing; no
 directory submission has been made.
 
-## Review the candidate
+## Install and review
 
 Use Claude Code **2.1.296 or later**. The verified development environment is
 macOS, Claude Code 2.1.296, Node.js 24.3.0 and Vitest 4.1.11. Inspect the source
@@ -23,15 +23,15 @@ and [privacy boundaries](docs/privacy.md) before loading a privileged mod:
 claude --plugin-dir .
 ```
 
-For a local marketplace lifecycle check from a reviewed candidate checkout:
+For a local marketplace lifecycle check from a reviewed source checkout:
 
 ```sh
 claude plugin install ernesto --marketplace .
 ```
 
 This registers the local marketplace `ernesto` and installs `ernesto@ernesto`
-in user scope. Restart Claude Code to load the installed version. Local
-candidate installation is different from anonymous public-release availability.
+in user scope. Restart Claude Code to load the installed version.
+Local source installation is different from anonymous public-release availability.
 
 The public shell command, **for an approved and verified release**, is:
 
@@ -113,7 +113,7 @@ visible. A matched snapshot means captured inputs matched at the displayed
 time, with the displayed exclusions. It cannot establish business correctness,
 immutable execution, or security against same-user tampering.
 
-## Recorded candidate demo
+## Recorded CLI demo
 
 [![Recorded CLI evidence pane and companion](docs/media/ernesto-cli-poster.png)](docs/media/ernesto-cli-candidate.mp4)
 
@@ -122,8 +122,9 @@ CLI terminal cells from a synthetic local test project. The pane and band
 are cropped and pauses shortened. It shows QA off, a real pass, a source edit
 making it stale, a real failing run, and chocolate leaving evidence unchanged.
 [English transcript](docs/media/ernesto-cli-en.md), plus German, Spanish and
-Chinese transcripts and captions, accompany the recording. This is a tested
-candidate demonstration. Publication status belongs to the versioned release record.
+Chinese transcripts and captions, accompany the recording. The recording
+identifies the captured version. Publication status belongs to the versioned
+release record.
 
 ## Development and checks
 
