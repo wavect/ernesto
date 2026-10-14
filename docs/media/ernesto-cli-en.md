@@ -1,11 +1,15 @@
-Recorded from actual Claude Code 2.1.296 CLI terminal output on macOS 26.5.1, using Ernesto 0.1.0, Node 24.3.0 and Vitest 4.1.11. The fixture is a fictitious local arithmetic test. Terminal cells are rendered faithfully; the evidence pane and companion band are cropped and pauses shortened. The helper ran explicitly in a separate local process. No model prompt or model call was used. Snapshot matches describe reviewed inputs at the shown comparison time, not external services or tamper-proof execution.
+Recorded from actual Claude Code 2.1.296 terminal output on macOS 26.5.1, using the unreleased Ernesto 0.2.0 development candidate, Node 24.3.0 and Vitest 4.1.11. The fixture is one synthetic local arithmetic test. Native terminal cells are cropped into labeled companion and evidence views; headings and bottom captions are editorial overlays. Typing and waits between stages are omitted. Terminal output was sampled at 8 fps and encoded at 12 fps. The helper ran explicitly as a separate local process, once passing and once failing. No model prompt or model call was used. There is no narration. A snapshot match covers declared inputs at comparison time, not external services, business acceptance or tamper-proof execution. Translated captions do not imply a localized plugin UI.
 
-Companion mode starts with QA off.
+QA observation starts on. /ernesto setup provides the exact local command.
 
-The explicitly invoked local Vitest helper records a pass for one selected test.
+The explicit --init helper creates defaults and runs one real passing test.
 
-Editing the source makes that previous pass stale.
+Expand scope and record details. A match covers declared inputs at comparison time.
 
-A new real test run fails. The host shows the failure.
+Editing a declared source input makes the previous passing result stale.
 
-Chocolate changes the companion mood; the failed evidence stays unchanged.
+A second explicit run really fails. Ernesto preserves that failure.
+
+/ernesto quiet on hides the banter while preserving the evidence and controls.
+
+Restore banter and offer chocolate. The failed result stays failed.

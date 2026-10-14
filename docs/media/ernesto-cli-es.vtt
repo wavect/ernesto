@@ -1,16 +1,30 @@
 WEBVTT
 
-00:00:00.000 --> 00:00:05.000
-El modo compañero comienza con QA desactivado.
+00:00:00.000 --> 00:00:06.000
+QA empieza activado. /ernesto setup muestra el
+comando local.
 
-00:00:05.000 --> 00:00:10.000
-El ayudante local de Vitest, iniciado explícitamente, registra un resultado aprobado para una prueba seleccionada.
+00:00:06.000 --> 00:00:14.000
+--init, iniciado explícitamente, crea la
+configuración y ejecuta una prueba real que
+pasa.
 
-00:00:10.000 --> 00:00:15.000
-Una edición del código deja desactualizado el resultado anterior.
+00:00:14.000 --> 00:00:20.000
+Despliega alcance y registro. La coincidencia
+cubre solo las entradas declaradas.
 
-00:00:15.000 --> 00:00:20.000
-Una nueva ejecución real falla. El anfitrión muestra el fallo.
+00:00:20.000 --> 00:00:26.000
+Editar el código declarado deja desactualizado
+el resultado anterior.
 
-00:00:20.000 --> 00:00:25.000
-El chocolate cambia el ánimo del compañero; la evidencia del fallo no cambia.
+00:00:26.000 --> 00:00:34.000
+Otra ejecución explícita falla de verdad.
+Ernesto conserva el fallo.
+
+00:00:34.000 --> 00:00:40.000
+/ernesto quiet on oculta bromas y mantiene
+evidencia y controles.
+
+00:00:40.000 --> 00:00:46.000
+Reactiva las bromas y ofrece chocolate. El
+resultado sigue fallido.

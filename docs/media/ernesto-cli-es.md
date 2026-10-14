@@ -1,11 +1,15 @@
-Grabación de la salida real del terminal CLI de Claude Code 2.1.296 en macOS 26.5.1 con Ernesto 0.1.0, Node 24.3.0 y Vitest 4.1.11. El ejemplo es una prueba aritmética local ficticia. Las celdas del terminal se representan fielmente; el panel y la banda están recortados y las pausas acortadas. El ayudante se ejecutó explícitamente en otro proceso local. No se enviaron prompts ni llamadas al modelo. Las coincidencias corresponden a las entradas revisadas en el momento mostrado, no a servicios externos ni a una ejecución resistente a manipulaciones.
+Grabación de la salida real del terminal de Claude Code 2.1.296 en macOS 26.5.1, con el candidato de desarrollo no publicado Ernesto 0.2.0, Node 24.3.0 y Vitest 4.1.11. El ejemplo contiene una prueba aritmética local sintética. Las celdas originales del terminal se recortan en vistas identificadas del compañero y la evidencia; los títulos y textos inferiores son superposiciones editoriales. Se omiten la escritura y las esperas entre etapas. La salida se capturó a 8 fps y se codificó a 12 fps. El ayudante se inició explícitamente como otro proceso local: una ejecución pasó y otra falló. No se enviaron prompts ni llamadas al modelo. No hay narración. La coincidencia cubre las entradas declaradas en el momento de comparación, no servicios externos, aceptación funcional ni una ejecución resistente a manipulaciones. Los subtítulos traducidos no implican una interfaz localizada del plugin.
 
-El modo compañero comienza con QA desactivado.
+QA empieza activado. /ernesto setup muestra el comando local.
 
-El ayudante local de Vitest, iniciado explícitamente, registra un resultado aprobado para una prueba seleccionada.
+--init, iniciado explícitamente, crea la configuración y ejecuta una prueba real que pasa.
 
-Una edición del código deja desactualizado el resultado anterior.
+Despliega alcance y registro. La coincidencia cubre solo las entradas declaradas.
 
-Una nueva ejecución real falla. El anfitrión muestra el fallo.
+Editar el código declarado deja desactualizado el resultado anterior.
 
-El chocolate cambia el ánimo del compañero; la evidencia del fallo no cambia.
+Otra ejecución explícita falla de verdad. Ernesto conserva el fallo.
+
+/ernesto quiet on oculta bromas y mantiene evidencia y controles.
+
+Reactiva las bromas y ofrece chocolate. El resultado sigue fallido.

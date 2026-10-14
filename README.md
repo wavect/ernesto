@@ -119,15 +119,19 @@ loading a privileged mod. Companion-only mode needs no QA configuration.
 
 [![Recorded CLI evidence pane and companion](docs/media/ernesto-cli-poster.png)](docs/media/ernesto-cli-candidate.mp4)
 
-The historical **0.1.0** [25-second recording](docs/media/ernesto-cli-candidate.mp4) uses actual
-CLI terminal cells from a synthetic local test project. The pane and band
-are cropped and pauses shortened. It shows QA off, a real pass, a source edit
-making it stale, a real failing run, and chocolate leaving evidence unchanged.
-[English transcript](docs/media/ernesto-cli-en.md), plus German, Spanish and
-Chinese transcripts and captions, accompany the recording. The recording
-identifies the captured version. Its QA-off startup is historical; the 0.2.0
-candidate defaults to observation on. Publication status belongs to the
-versioned release record.
+The **unreleased 0.2.0 candidate** [46-second recording](docs/media/ernesto-cli-candidate.mp4)
+uses actual Claude Code terminal cells from one synthetic local arithmetic test.
+It shows default-on QA and guided setup, an explicit real passing run, expanded
+scope, an edit making the old result stale, a real failure, quiet mode and the
+new sarcastic chocolate response leaving that failure unchanged.
+
+The native pane and band are cropped into a labeled presentation; headings and
+bottom captions are editorial overlays. Typing and waits between stages are
+omitted. The helper runs explicitly in a separate local process. No model prompt
+or model call was used. [English transcript](docs/media/ernesto-cli-en.md), plus
+German, Spanish and Chinese transcripts and captions, accompany the recording.
+The plugin UI remains English. Historical 0.1.0 media stays in its immutable
+release; this candidate demo does not establish a new published release.
 
 ## Development and checks
 

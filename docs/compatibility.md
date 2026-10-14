@@ -12,6 +12,13 @@ Ernesto **0.1.0** retains the tested terminal companion and evidence behavior. T
 
 The official host harness validates hook behavior and drawing trees; it is not a substitute for real terminal screenshots, an installed-copy lifecycle or a Desktop test. Final release review must retain those separate results. The current UI uses native Raster artwork on sufficiently tall terminals and a compact text/pixel fallback at smaller sizes. Commands provide essential text. The evidence pane is opened intentionally, and reduced motion is the default.
 
+The source-branch [46-second demo](media/ernesto-cli-candidate.mp4) records the
+unreleased 0.2.0 candidate on that same macOS/host/runtime combination. It uses
+real terminal cells, one explicit passing and one explicit failing helper run,
+and no model calls. Editorial headings and translated captions are separate
+from the English plugin UI. The recording does not extend platform support or
+establish a published 0.2.0 release.
+
 ## Command syntax versus mod requirements
 
 | Command capability | Platform syntax floor | Ernesto tested baseline |
