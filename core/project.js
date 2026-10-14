@@ -13,7 +13,13 @@ const PRIORITY = [
 const scriptName = (name) =>
   /^(?:test|check|verify|lint)(?::[a-z0-9_-]+)*$/i.test(name) &&
   !/(?:^|:)(?:watch|dev|fix)(?:$|:)/i.test(name);
-export function detectProject(packageText, entries, vitestVersion, pluginRoot) {
+export function detectProject(
+  packageText,
+  entries,
+  vitestVersion,
+  pluginRoot,
+  configured = false,
+) {
   if (!Array.isArray(entries) || entries.length > 512) return null;
   let pkg;
   if (packageText != null) {
@@ -27,6 +33,12 @@ export function detectProject(packageText, entries, vitestVersion, pluginRoot) {
     if (!pkg || typeof pkg !== 'object' || Array.isArray(pkg))
       throw Error('Project package.json needs an object');
   }
+  const detailed = {
+    kind: 'vitest',
+    label: 'Vitest project tests',
+    argv: ['node', pluginRoot + '/integrations/vitest/run.mjs', '--init'],
+  };
+  if (configured && vitestVersion === '4.1.11') return detailed;
   const scripts = pkg?.scripts;
   if (scripts && typeof scripts === 'object' && !Array.isArray(scripts)) {
     const names = Object.keys(scripts).filter(
@@ -63,12 +75,7 @@ export function detectProject(packageText, entries, vitestVersion, pluginRoot) {
       };
     }
   }
-  if (vitestVersion === '4.1.11')
-    return {
-      kind: 'vitest',
-      label: 'Vitest project tests',
-      argv: ['node', pluginRoot + '/integrations/vitest/run.mjs', '--init'],
-    };
+  if (vitestVersion === '4.1.11') return detailed;
   return null;
 }
 export function commandSummary(run) {

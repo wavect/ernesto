@@ -733,6 +733,7 @@ test('terminal claims of passing tests do not create structured QA evidence', as
 
 test('failed explicit Vitest launch cannot reuse an earlier passing record as its new result', async ($, on) => {
   const f = await fixture(on);
+  f.files['package.json'] = JSON.stringify({ scripts: { test: 'vitest run' } });
   on('process.run', () => ({
     value: {
       exitCode: 1,

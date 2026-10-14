@@ -408,7 +408,22 @@ async function discover($, ctx, force = false) {
         ),
       ).version;
     } catch {}
-    const detected = detectProject(pkg, entries, vitest, $.plugin.root);
+    let configured = false;
+    try {
+      parseCheckConfig(
+        new TextDecoder('utf-8', { fatal: true }).decode(
+          await fs.read('.ernesto/config.json'),
+        ),
+      );
+      configured = true;
+    } catch {}
+    const detected = detectProject(
+      pkg,
+      entries,
+      vitest,
+      $.plugin.root,
+      configured,
+    );
     let scope = null;
     try {
       scope = defaultCheckConfig(
@@ -721,6 +736,7 @@ export function register(on, options = {}) {
         if (!ctx.supported) throw Error('Unsupported host');
         ctx.state.prefs.qa = true;
         ctx.state.enabled = true;
+        ctx.state.projectRun = null;
         ctx.generation++;
         await save($, ctx, 'qa');
         poll($, ctx);

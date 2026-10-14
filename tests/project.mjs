@@ -44,6 +44,16 @@ test('discovery selects an existing one-shot check and its package manager witho
     'test',
   ]);
   assert.equal(detectProject(null, [], '4.1.11', '/plugin').kind, 'vitest');
+  assert.equal(
+    detectProject(
+      JSON.stringify({ scripts: { test: 'vitest run' } }),
+      [],
+      '4.1.11',
+      '/plugin',
+      true,
+    ).kind,
+    'vitest',
+  );
   assert.equal(detectProject(null, [], '4.1.10', '/plugin'), null);
   for (const bad of ['{broken', '[]', 'null', 'x'.repeat(65537)])
     assert.throws(() => detectProject(bad, [], null, '/plugin'));
