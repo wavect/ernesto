@@ -1,14 +1,31 @@
 # Release verification and recovery
 
-Implementation version: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
+Implementation candidate: **0.2.0, unreleased**. Published stable: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
 
-The release includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
+The published 0.1.0 release includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
+
+## 0.2.0 candidate scope
+
+The candidate changes onboarding, default observation and terminal presentation. QA defaults on,
+remembers per-workspace overrides and connects to valid config automatically.
+The explicit helper can generate defaults with `--setup` or initialize and run
+with `--init`; existing config is preserved. The hook runtime still performs no
+project writes or automatic test execution. Fresh installation, upgrade from
+0.1.0, requirements, persistence and package checks must be recorded for this
+candidate separately. The redesigned companion and evidence pane require their own narrow/wide, theme,
+keyboard and reduced-motion checks. The current 46-second recording captures the
+unreleased 0.2.0 runtime: default-on setup, an explicit real pass, scope disclosure,
+a stale edit, real failure, quiet mode and sarcastic chocolate. Its seven stages,
+poster and four caption/transcript languages replace the source-branch demo.
+Native cells are cropped with labeled editorial overlays. Runtime hashes and
+media checksums are in `docs/media/recording.json`; tagged 0.1.0 media is unchanged.
+No new release, tag or website availability claim is established by this branch.
 
 ## Reviewable evidence
 
 The tested environment is terminal Claude Code 2.1.296 on macOS 26.5.1 arm64, with Node.js 24.3.0 and project-local Vitest 4.1.11. See [compatibility](compatibility.md) for the distinction between command syntax floors and product testing.
 
-Historical rc.1 checks passed: 23 official host tests, 16 Node tests (including four real Vitest integrations and two package tests), strict plugin validation and npm audit with zero vulnerabilities. Independent local marketplace checks exercised combined and fallback installation in user and project scopes, an isolated rc.2 version update and scoped uninstall/reinstall. The actual 25-second CLI demo has five reviewed stages, a poster, screenshots and four caption/transcript languages. Independent privacy/package and terminal review passed; [short local performance measurements](performance.md) include a 0.441-second stale-update observation and their limits. Both exact-head GitHub workflows passed for the merged implementation. Those Linux harness results do not establish real Linux terminal UI support. Every release still requires final source/archive reconciliation and owner approval.
+Historical rc.1 checks passed: 23 official host tests, 16 Node tests (including four real Vitest integrations and two package tests), strict plugin validation and npm audit with zero vulnerabilities. Independent local marketplace checks exercised combined and fallback installation in user and project scopes, an isolated rc.2 version update and scoped uninstall/reinstall. The historical 25-second CLI demo had five reviewed stages, a poster, screenshots and four caption/transcript languages. Independent privacy/package and terminal review passed; [short local performance measurements](performance.md) include a 0.441-second stale-update observation and their limits. Both exact-head GitHub workflows passed for the merged implementation. Those Linux harness results do not establish real Linux terminal UI support. Every release still requires final source/archive reconciliation and owner approval.
 
 The stable version changes the displayed version and release documentation, and adds bounded CI failure receipts. Runtime behavior, helper behavior, artwork rights and compatibility limits remain as documented. Exact stable checks, source and archive results belong to its versioned release record. The immutable rc.1 release remains available.
 

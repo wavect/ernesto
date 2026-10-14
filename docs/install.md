@@ -46,6 +46,17 @@ Verify with `claude --version`, `claude plugin marketplace list`,
 `/reload-plugins` where supported, then run `/ernesto` in a fresh session.
 A registered marketplace alone does not prove loaded hooks or working UI.
 
+## First use in the 0.2.0 candidate
+
+After restart, open Claude Code in your project and run `/ernesto setup`.
+Copy its exact installed helper command into your project terminal. `--init`
+creates missing conventional defaults and runs one explicit check; `--setup`
+creates defaults without running tests. Existing configuration is preserved.
+QA observation defaults on and remembers `/ernesto qa off` for each workspace.
+Use `/ernesto doctor` for requirements and `/ernesto evidence` for the result.
+The published 0.1.0 release retains its earlier manual, per-session QA setup.
+See [the walkthrough](getting-started.md).
+
 ## Local review
 
 From the reviewed checkout, use `claude --plugin-dir .` for development, or

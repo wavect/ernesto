@@ -11,10 +11,12 @@ const config = {
   filters: [],
   runtimeDescriptor: 'node-24/vitest-4.1.11',
 };
-async function fixture(on, hostVersion = '2.1.296') {
+async function fixture(on, hostVersion = '2.1.296', denyCommands = false) {
   const clock = mock.clock(on);
   mock.store(on);
-  on('command.register', () => ({ value: undefined }));
+  on('command.register', () =>
+    denyCommands ? { deny: 'Name already registered' } : { value: undefined },
+  );
   on('session.version', () => ({ value: { version: hostVersion } }));
   on('session.start', ($, e) => ({ cwd: e.cwd }));
   on('ui.open', () => ({ value: { isPlaced: true } }));
@@ -97,7 +99,7 @@ async function fixture(on, hostVersion = '2.1.296') {
     configHash: a.configHash,
     startedAt: 11,
   });
-  const control = { deny: false, seen: [] };
+  const control = { deny: false, seen: [], readGate: null, readEntered: null };
   on('fs.stat', async ($, e) => {
     control.seen.push(e.path);
     if (control.deny) return { deny: 'permission denied' };
@@ -130,14 +132,118 @@ async function fixture(on, hostVersion = '2.1.296') {
       kind: 'file',
     })),
   }));
-  on('fs.read', async ($, e) => ({
-    value: {
-      base64: btoa(files[e.path.slice(root.length + 1)]),
-      encoding: 'base64',
-    },
-  }));
+  on('fs.read', async ($, e) => {
+    if (control.readGate) {
+      control.readEntered?.();
+      await control.readGate;
+    }
+    return {
+      value: {
+        base64: btoa(files[e.path.slice(root.length + 1)]),
+        encoding: 'base64',
+      },
+    };
+  });
   return { files, control, record, clock, closed: () => closed };
 }
+test('startup command registration failure leaves evidence work stopped', async ($, on) => {
+  const f = await fixture(on, '2.1.296', true);
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(5000);
+  expect(f.control.seen.length).toBe(0);
+});
+
+test('QA observes an existing config by default without an enable command or any test process', async ($, on) => {
+  const f = await fixture(on);
+  let processes = 0;
+  on('process.run', () => {
+    processes++;
+    return { deny: 'No automatic processes' };
+  });
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  const status = await $.command.run({ command: 'ernesto', args: 'status' });
+  expect(status.text).toContain('passed · matched');
+  expect(status.text).toContain('Next:');
+  expect(status.text).not.toContain('Declared inputs:');
+  expect(status.text.length).toBeLessThan(1000);
+  expect(processes).toBe(0);
+});
+
+test('QA off persists across sessions and QA on restores the remembered workspace preference', async ($, on) => {
+  const f = await fixture(on);
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await $.command.run({ command: 'ernesto', args: 'qa off' });
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  const count = f.control.seen.length;
+  await f.clock.advance(5000);
+  expect(f.control.seen.length).toBe(count);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('QA is off');
+  await $.command.run({ command: 'ernesto', args: 'qa on' });
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+});
+
+test('missing config shows setup guidance and newly created config is picked up without restarting', async ($, on) => {
+  const f = await fixture(on);
+  const saved = f.files['.ernesto/config.json'];
+  delete f.files['.ernesto/config.json'];
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  const setup = await $.command.run({ command: 'ernesto', args: 'setup' });
+  expect(setup.text).toContain('--init');
+  expect(setup.text).toContain('--setup');
+  expect(setup.text).toContain('\nnode ');
+  expect(setup.text).toContain('Existing configuration is never overwritten');
+  expect(f.control.seen).not.toContain(root + '/src/a.js');
+  const status = await $.command.run({ command: 'ernesto', args: 'status' });
+  expect(status.text).toContain('QA observation is on');
+  expect(status.text).not.toContain('passed · matched');
+  f.files['.ernesto/config.json'] = saved;
+  await f.clock.advance(1600);
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+});
+
+test('doctor explains runner requirements without executing a command or echoing malformed package content', async ($, on) => {
+  const f = await fixture(on);
+  f.files['node_modules/vitest/package.json'] = 'private broken package';
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  const result = await $.command.run({ command: 'ernesto', args: 'doctor' });
+  expect(result.text).toContain('npm install --save-dev vitest@4.1.11');
+  expect(result.text).toContain('Node.js 24');
+  expect(result.text).not.toContain('private broken package');
+  expect(f.control.seen).not.toContain(root + '/src/a.js');
+});
+
+test('turning QA off during startup discovery cannot re-enable it when the read completes', async ($, on) => {
+  const f = await fixture(on);
+  let release;
+  let entered;
+  f.control.readGate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const reading = new Promise((resolve) => {
+    entered = resolve;
+  });
+  f.control.readEntered = entered;
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  const pending = f.clock.advance(150);
+  await reading;
+  await $.command.run({ command: 'ernesto', args: 'qa off' });
+  release();
+  await pending;
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('QA is off');
+  expect(f.control.seen).not.toContain(root + '/src/a.js');
+});
 test('required read failure invalidates a previously matched result', async ($, on) => {
   const f = await fixture(on);
   await $.session.start({ cwd: root, surface: null, isInteractive: false });
@@ -197,7 +303,54 @@ test('source change makes the previous scoped result stale; chocolate preserves 
     (await $.command.run({ command: 'ernesto', args: 'evidence' })).text,
   ).toContain('passed · stale');
 });
-test('new workspace begins with QA off and cannot display prior workspace evidence', async ($, on) => {
+test('sarcastic banter rotates on activity, quiet suppresses it and polling preserves the line and evidence', async ($, on) => {
+  const f = await fixture(on);
+  on('ui.render', () => ({
+    type: 'Text',
+    props: {},
+    children: ['host drawing'],
+  }));
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  const before = await $.command.run({ command: 'ernesto', args: 'evidence' });
+  const first = await $.command.run({ command: 'ernesto', args: 'chocolate' });
+  const second = await $.command.run({ command: 'ernesto', args: 'chocolate' });
+  expect(first.text).not.toBe(second.text);
+  expect(second.text).toContain('QA evidence is unchanged.');
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'evidence' })).text,
+  ).toBe(before.text);
+  await $.command.run({ command: 'ernesto', args: 'quiet on' });
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'chocolate' })).text,
+  ).toBe('Chocolate accepted. QA evidence is unchanged.');
+  await $.command.run({ command: 'ernesto', args: 'quiet off' });
+  const answer = await $.command.run({ command: 'ernesto', args: 'chocolate' });
+  const caption = answer.text.replace(' QA evidence is unchanged.', '');
+  const band = await $.ui.mount({
+    plugin: 'ernesto',
+    surface: 'terminal',
+    component: 'AbovePrompt',
+    viewport: { columns: 100, rows: 30 },
+    props: {
+      hasSurvey: false,
+      isWorking: false,
+      maxRows: 6,
+      bodyColumns: 100,
+      scroll: { offset: 0, bodyRows: 6 },
+      view: {},
+    },
+  });
+  expect(await band.find({ type: 'Text', text: caption })).toBeDefined();
+  await f.clock.advance(1600);
+  expect(await band.find({ type: 'Text', text: caption })).toBeDefined();
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+  await band.unmount();
+});
+
+test('new workspace starts with independent QA setup and cannot display prior workspace evidence', async ($, on) => {
   const f = await fixture(on);
   await $.session.start({ cwd: root, surface: null, isInteractive: false });
   await $.command.run({ command: 'ernesto', args: 'qa enable' });
@@ -210,7 +363,7 @@ test('new workspace begins with QA off and cannot display prior workspace eviden
     isInteractive: false,
   });
   const answer = await $.command.run({ command: 'ernesto', args: 'evidence' });
-  expect(answer.text).toContain('QA is off');
+  expect(answer.text).toContain('QA observation is on');
   expect(answer.text).not.toContain(id);
 });
 test('foreign-worktree record cannot become a current passing result', async ($, on) => {
@@ -269,6 +422,24 @@ test('evidence pane refresh and close controls work without model interaction', 
     await pane.find({ type: 'Text', text: /passed · matched/ }),
   ).toBeDefined();
   expect(await pane.find({ type: 'Button', key: 'refresh' })).toBeDefined();
+  expect(
+    await pane.find({ type: 'Text', text: /1 passed · 0 failed/ }),
+  ).toBeDefined();
+  expect(
+    await pane.find({ type: 'Text', text: /Recorded check:/ }),
+  ).toBeUndefined();
+  await pane.press({ key: 'details' });
+  expect(
+    await pane.find({ type: 'Text', text: /Recorded check:/ }),
+  ).toBeDefined();
+  expect(
+    await pane.find({ type: 'Text', text: /Declared inputs: src/ }),
+  ).toBeDefined();
+  await pane.press({ key: 'details' });
+  expect(
+    await pane.find({ type: 'Text', text: /Recorded check:/ }),
+  ).toBeUndefined();
+
   f.files['src/a.js'] = 'changed';
   await pane.press({ key: 'refresh' });
   expect(
@@ -288,15 +459,33 @@ test('tall terminal uses approved pixel portrait and renders complete evidence d
   });
   await $.command.run({ command: 'ernesto', args: 'qa enable' });
   const answer = await $.command.run({ command: 'ernesto', args: 'evidence' });
+  expect(answer.text).toBeUndefined();
+  const pane = await $.ui.mount({
+    plugin: 'ernesto',
+    surface: 'terminal',
+    component: 'Pane',
+    requestId: 'ernesto-evidence',
+    viewport: { columns: 80, rows: 30 },
+    props: {
+      title: 'Ernesto evidence',
+      isFocused: true,
+      bodyColumns: 78,
+      bodyRows: 28,
+      scroll: { offset: 0, bodyRows: 28 },
+      view: {},
+    },
+  });
+  await pane.press({ key: 'details' });
   for (const text of [
-    'Reviewed inputs: src',
-    'Scope: suite',
-    '1 passed; 0 failed; 0 skipped; 0 todo',
-    'Integrity: validated_local_record',
-    'Excluded:',
-    'Last comparison: 1970-01-01',
+    /Declared inputs: src/,
+    /Scope: suite/,
+    /1 passed; 0 failed; 0 skipped; 0 todo/,
+    /Integrity: validated_local_record/,
+    /Excluded:/,
+    /Last comparison: 1970-01-01/,
   ])
-    expect(answer.text).toContain(text);
+    expect(await pane.find({ type: 'Text', text })).toBeDefined();
+  await pane.unmount();
   const band = await $.ui.mount({
     plugin: 'ernesto',
     surface: 'terminal',
@@ -494,7 +683,7 @@ test('original tool errors, interruption and denials pass through exactly once w
     'original permission refusal',
   ])
     expect(answer.text).not.toContain(text);
-  expect(answer.text).toContain('QA is off');
+  expect(answer.text).toContain('QA observation is on');
 });
 
 test('concurrent tool reentry preserves each original result and executes each once', async ($, on) => {

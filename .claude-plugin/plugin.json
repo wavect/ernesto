@@ -1,7 +1,7 @@
 {
   "name": "ernesto",
-  "version": "0.1.0",
-  "description": "Wavect companion with optional scoped Vitest evidence",
+  "version": "0.2.0",
+  "description": "Wavect companion with guided setup and scoped Vitest evidence",
   "author": {
     "name": "Wavect GmbH"
   },
@@ -26,6 +26,12 @@
       "title": "Hide companion",
       "description": "Hide the band; commands remain available.",
       "default": false
+    },
+    "qa": {
+      "type": "boolean",
+      "title": "QA observation",
+      "description": "Watch configured local evidence by default. Never runs tests. /ernesto qa off remembers a workspace override.",
+      "default": true
     }
   },
   "license": "MIT"

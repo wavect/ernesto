@@ -1,16 +1,29 @@
 WEBVTT
 
-00:00:00.000 --> 00:00:05.000
-Companion mode starts with QA off.
+00:00:00.000 --> 00:00:06.000
+QA observation starts on. /ernesto setup
+provides the exact local command.
 
-00:00:05.000 --> 00:00:10.000
-The explicitly invoked local Vitest helper records a pass for one selected test.
+00:00:06.000 --> 00:00:14.000
+The explicit --init helper creates defaults and
+runs one real passing test.
 
-00:00:10.000 --> 00:00:15.000
-Editing the source makes that previous pass stale.
+00:00:14.000 --> 00:00:20.000
+Expand scope and record details. A match covers
+declared inputs at comparison time.
 
-00:00:15.000 --> 00:00:20.000
-A new real test run fails. The host shows the failure.
+00:00:20.000 --> 00:00:26.000
+Editing a declared source input makes the
+previous passing result stale.
 
-00:00:20.000 --> 00:00:25.000
-Chocolate changes the companion mood; the failed evidence stays unchanged.
+00:00:26.000 --> 00:00:34.000
+A second explicit run really fails. Ernesto
+preserves that failure.
+
+00:00:34.000 --> 00:00:40.000
+/ernesto quiet on hides the banter while
+preserving the evidence and controls.
+
+00:00:40.000 --> 00:00:46.000
+Restore banter and offer chocolate. The failed
+result stays failed.

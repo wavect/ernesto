@@ -12,6 +12,13 @@ Ernesto **0.1.0** retains the tested terminal companion and evidence behavior. T
 
 The official host harness validates hook behavior and drawing trees; it is not a substitute for real terminal screenshots, an installed-copy lifecycle or a Desktop test. Final release review must retain those separate results. The current UI uses native Raster artwork on sufficiently tall terminals and a compact text/pixel fallback at smaller sizes. Commands provide essential text. The evidence pane is opened intentionally, and reduced motion is the default.
 
+The source-branch [46-second demo](media/ernesto-cli-candidate.mp4) records the
+unreleased 0.2.0 candidate on that same macOS/host/runtime combination. It uses
+real terminal cells, one explicit passing and one explicit failing helper run,
+and no model calls. Editorial headings and translated captions are separate
+from the English plugin UI. The recording does not extend platform support or
+establish a published 0.2.0 release.
+
 ## Command syntax versus mod requirements
 
 | Command capability | Platform syntax floor | Ernesto tested baseline |
@@ -26,7 +33,7 @@ These syntax floors are documented platform facts, not Ernesto support results f
 
 Companion mode needs no Node runtime, test runner or QA configuration. The separately invoked helper ships inside the plugin with its pure core modules. It requires **Node major 24** and the project's already installed **Vitest 4.1.11**, refuses other combinations, and never downloads a runner. The tested Node patch version is 24.3.0; other Node 24 patch versions have not been separately qualified.
 
-The host reads the reviewed runtime descriptor and installed Vitest version. It cannot independently establish the runtime of a future test process, environment secrets, native state or external services. Snapshots describe only captured inputs, with explicit exclusions and observation limits. Read [the evidence method](evidence.md) before enabling QA.
+The host reads the reviewed runtime descriptor and installed Vitest version. It cannot independently establish the runtime of a future test process, environment secrets, native state or external services. Snapshots describe only captured inputs, with explicit exclusions and observation limits. Review [the evidence method](evidence.md) and declared scope. Candidate 0.2.0 enables observation by default; `/ernesto qa off` remembers a workspace override.
 
 If an optional host facility is missing, use the text commands to inspect the limitation. Older/unsupported hosts refuse QA before project scans; no unavailable capability is converted into passing evidence. Disable/hide stops scheduled evidence work. No fallback launches a subprocess or makes a model/network call.
 

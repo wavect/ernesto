@@ -1,7 +1,10 @@
-export const HELP = `Ernesto 0.1.0, Wavect companion for Claude Code.
+import { personalityLine } from './personality.js';
+export const HELP = `Ernesto 0.2.0, Wavect companion for Claude Code.
+/ernesto setup | doctor | status
 /ernesto evidence | refresh | hide | show | chocolate
 /ernesto quiet on|off | motion reduced|normal
-/ernesto qa setup | qa enable | qa off | forget confirm
+/ernesto qa on|off | qa setup | qa enable | forget confirm
+QA observation defaults on. Your on/off choice is remembered for this workspace.
 Companion mood is independent of evidence. No automatic tests, installs, model calls or telemetry.`;
 export function parseCommand(args) {
   if (
@@ -12,10 +15,14 @@ export function parseCommand(args) {
     return { action: 'invalid' };
   const words = args.trim().split(/\s+/);
   const s = words.join(' ');
-  if (!s || s === 'help' || s === 'status') return { action: 'help' };
+  if (!s || s === 'help') return { action: 'help' };
+  if (s === 'status') return { action: 'status' };
+  if (s === 'setup' || s === 'qa setup') return { action: 'setup' };
+  if (s === 'doctor') return { action: 'doctor' };
+  if (s === 'qa on') return { action: 'qa enable' };
   if (['evidence', 'refresh', 'hide', 'show', 'chocolate'].includes(s))
     return { action: s };
-  if (['qa setup', 'qa enable', 'qa off', 'forget confirm'].includes(s))
+  if (['qa enable', 'qa off', 'forget confirm'].includes(s))
     return { action: s };
   if (s === 'forget') return { action: 'forget' };
   if (/^quiet (on|off)$/.test(s))
@@ -24,21 +31,21 @@ export function parseCommand(args) {
     return { action: 'motion', value: words[1] === 'reduced' };
   return { action: 'invalid' };
 }
-const captions = {
-  idle: 'Available for professional suspicion.',
-  wake: 'Ready when you are.',
-  focus: 'Reading the interesting bits.',
-  activity: 'Work observed. Checks are separate.',
-  chocolate: 'A rigorous compensation policy.',
-  complete: 'Claude finished. Evidence has its own opinion.',
-};
+const actions = ['idle', 'wake', 'focus', 'activity', 'chocolate', 'complete'];
 export function companion(previous, action, now) {
-  if (!Object.hasOwn(captions, action)) return previous;
-  return { pose: action, caption: captions[action], changedAt: now };
+  if (!actions.includes(action)) return previous;
+  const banterIndex = ((previous.banterIndex ?? 0) + 1) % 4;
+  return {
+    pose: action,
+    caption: personalityLine(action, banterIndex),
+    banterIndex,
+    changedAt: now,
+  };
 }
 export const INITIAL_COMPANION = {
   pose: 'idle',
-  caption: captions.idle,
+  caption: personalityLine('idle'),
+  banterIndex: 0,
   changedAt: 0,
 };
 export function safeText(value, max = 240) {

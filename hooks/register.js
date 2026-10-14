@@ -15,7 +15,8 @@ import {
   evidenceRecordPath,
   MAX_RECORD_BYTES,
 } from '../core/evidence.js';
-import { drawBand, drawPane, detailsText } from '../ui/view.js';
+import { drawBand, drawPane, detailsText, statusText } from '../ui/view.js';
+import { helperCommand } from '../core/setup.js';
 async function workspaceFS($, cwd) {
   const rootInfo = await $.fs.stat(cwd, { resolve: true });
   const root = rootInfo.realPath?.replace(/\/$/, '');
@@ -90,6 +91,7 @@ function createContext(options) {
     quiet: options.quiet === true,
     reducedMotion: options.reducedMotion !== false,
     hidden: options.hidden === true,
+    qa: options.qa !== false,
   };
   return {
     defaults,
@@ -99,10 +101,12 @@ function createContext(options) {
       qa: initialEvidence(),
       enabled: false,
       frame: 0,
+      detailsExpanded: false,
     },
     supported: false,
     cwd: '',
     surface: null,
+    interactive: false,
     key: '',
     timer: null,
     animation: null,
@@ -169,10 +173,25 @@ async function refresh($, ctx) {
     !ctx.state.enabled ||
     ctx.state.prefs.hidden ||
     ctx.busy ||
-    !ctx.fs ||
-    !ctx.config
+    !ctx.supported
   )
     return;
+  if (!ctx.fs || !ctx.config) {
+    const connecting = ctx.generation;
+    try {
+      await setup($, ctx, true);
+    } catch {
+      if (connecting === ctx.generation && ctx.state.enabled) {
+        ctx.state.qa = {
+          ...initialEvidence(),
+          reason:
+            'Setup needed. Run /ernesto setup for the exact local command.',
+        };
+        invalidate($);
+      }
+    }
+    return;
+  }
   ctx.busy = true;
   const ticket = ctx.generation;
   const beginEpoch = ctx.epoch;
@@ -333,14 +352,17 @@ function poll($, ctx) {
 }
 async function setup($, ctx, enable) {
   if (!ctx.supported) throw Error('Claude Code 2.1.296 or later required');
+  const ticket = ctx.generation;
   const candidate = await workspaceFS($, ctx.cwd);
   const raw = await candidate.read('.ernesto/config.json');
   if (raw.length > 8192) throw Error('Config too large');
   const reviewed = parseCheckConfig(
     new TextDecoder('utf-8', { fatal: true }).decode(raw),
   );
-  const preview = `QA reads only reviewed input roots: ${reviewed.scope.roots.join(', ')}.\nExclusions: ${reviewed.scope.excludes.join(', ') || 'default secret/dependency/output exclusions'}.\nRuntime descriptor: ${reviewed.runtimeDescriptor}.\nThe helper runs your project tests only when you invoke it. Tests may use your environment and network.\nReview docs/evidence.md and the config, then use /ernesto qa enable.\nExplicit helper: node "${$.plugin.root}/integrations/vitest/run.mjs"`;
+  const preview = `Configuration ready. Run this in your PROJECT terminal when ready:\n${helperCommand($.plugin.root)}\nThen /ernesto evidence for the result.\nScope: ${reviewed.scope.roots.length} declared input roots; review .ernesto/config.json or /ernesto evidence for the full list and exclusions. Custom project inputs may need adding.\nRuntime: ${reviewed.runtimeDescriptor}. Project tests use your environment and may access the network.\nErnesto has not launched tests; running the terminal command above executes them.\n/ernesto qa on resumes observation; /ernesto qa off pauses it and remembers your choice.`;
   if (!enable) return preview;
+  if (ticket !== ctx.generation || !ctx.state.prefs.qa)
+    return 'Setup interrupted by a newer workspace or preference change. Run /ernesto status.';
   ctx.fs = candidate;
   ctx.config = reviewed;
   ctx.state.enabled = true;
@@ -350,12 +372,46 @@ async function setup($, ctx, enable) {
   await refresh($, ctx);
   return 'Project QA enabled. ' + preview;
 }
+async function gettingStarted($, ctx, doctor = false) {
+  if (!ctx.supported)
+    return 'Use Claude Code 2.1.296 or later, reload the plugin, then /ernesto setup. No project files read or changed.';
+  let candidate;
+  let summary;
+  try {
+    summary = await setup($, ctx, false);
+  } catch {
+    summary = `Project setup is needed (configuration missing, unreadable or invalid). No files changed.\nIn your PROJECT terminal, create conventional defaults and run the first check explicitly:\n${helperCommand($.plugin.root, '--init')}\nTo create defaults without running tests:\n${helperCommand($.plugin.root, '--setup')}\nExisting configuration is never overwritten. Review .ernesto/config.json for custom source, test and configuration inputs.\nAfterward, /ernesto refresh or /ernesto evidence. QA observation is ${ctx.state.prefs.qa ? 'on' : 'off; use /ernesto qa on to resume'}.`;
+  }
+  if (doctor) {
+    let runner =
+      'Missing or unreadable. Install project-local Vitest 4.1.11 yourself (npm install --save-dev vitest@4.1.11), or keep companion mode.';
+    try {
+      candidate = await workspaceFS($, ctx.cwd);
+      const installed = JSON.parse(
+        new TextDecoder().decode(
+          await candidate.read('node_modules/vitest/package.json'),
+        ),
+      );
+      runner =
+        installed.version === '4.1.11'
+          ? 'Vitest 4.1.11 is installed.'
+          : 'Unsupported runner version. This integration requires Vitest 4.1.11; no dependencies changed.';
+    } catch {}
+    summary =
+      'Host: supported Claude Code.\nRunner: ' +
+      runner +
+      '\nNode: the explicit helper checks for Node.js 24.\n' +
+      summary;
+  }
+  return summary;
+}
 export function register(on, options = {}) {
   const ctx = createContext(options);
   on('session.start', async ($, e, next) => {
     stop(ctx);
     ctx.cwd = e.cwd;
     ctx.surface = e.surface;
+    ctx.interactive = e.isInteractive === true;
     ctx.key = 'v1.' + sha256('ernesto-preferences\0' + ctx.cwd);
     ctx.state.enabled = false;
     ctx.state.qa = initialEvidence();
@@ -378,9 +434,12 @@ export function register(on, options = {}) {
       await $.command.register({
         name: 'ernesto',
         description: 'Companion controls and scoped Vitest evidence',
-        argumentHint: '[evidence|qa setup|quiet on|motion reduced]',
+        argumentHint: '[setup|doctor|evidence|qa on|qa off]',
         immediate: true,
       });
+      ctx.state.enabled = ctx.supported && ctx.state.prefs.qa;
+      poll($, ctx);
+      schedule($, ctx);
     } catch {
       ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
     }
@@ -423,10 +482,10 @@ export function register(on, options = {}) {
     const c = parseCommand(e.args || '');
     try {
       if (c.action === 'invalid') return { text: 'Invalid command.\n' + HELP };
-      if (c.action === 'help')
+      if (c.action === 'help' || c.action === 'status')
         return {
           text:
-            HELP +
+            (c.action === 'help' ? HELP : 'Ernesto 0.2.0 status') +
             '\nSurface: ' +
             (ctx.surface || 'text fallback') +
             '; ' +
@@ -434,27 +493,44 @@ export function register(on, options = {}) {
               ? 'supported host'
               : 'requires Claude Code 2.1.296+') +
             '\n' +
-            detailsText(ctx.state.qa, ctx.state.enabled, ctx.config),
+            statusText(ctx.state.qa, ctx.state.enabled, ctx.config),
         };
-      if (c.action === 'qa setup') {
+      if (c.action === 'setup' || c.action === 'doctor')
+        return { text: await gettingStarted($, ctx, c.action === 'doctor') };
+      if (c.action === 'qa enable') {
+        if (!ctx.supported) throw Error('Unsupported host');
+        ctx.state.prefs.qa = true;
+        ctx.state.enabled = true;
+        ctx.generation++;
+        await save($, ctx, 'qa');
+        poll($, ctx);
         try {
-          return { text: await setup($, ctx, false) };
+          return { text: await setup($, ctx, true) };
         } catch {
+          ctx.fs = null;
+          ctx.config = null;
+          ctx.state.qa = initialEvidence();
+          invalidate($);
           return {
-            text: 'Create and review .ernesto/config.json following docs/evidence.md. No files have been edited and no tests run.',
+            text:
+              'QA observation on; setup needed.\n' +
+              (await gettingStarted($, ctx)),
           };
         }
       }
-      if (c.action === 'qa enable') return { text: await setup($, ctx, true) };
       if (c.action === 'qa off') {
+        ctx.state.prefs.qa = false;
         ctx.state.enabled = false;
         ctx.generation++;
         stop(ctx);
         ctx.fs = null;
         ctx.config = null;
         ctx.state.qa = initialEvidence();
+        await save($, ctx, 'qa');
         invalidate($);
-        return { text: 'QA off. Companion remains available.' };
+        return {
+          text: 'QA off. Remembered for this workspace, including new sessions. /ernesto qa on resumes it. Companion remains available.',
+        };
       }
       if (c.action === 'hide' || c.action === 'show') {
         ctx.state.prefs.hidden = c.action === 'hide';
@@ -489,7 +565,9 @@ export function register(on, options = {}) {
       if (c.action === 'chocolate') {
         move($, ctx, 'chocolate');
         return {
-          text: 'A rigorous compensation policy. QA evidence is unchanged.',
+          text: ctx.state.prefs.quiet
+            ? 'Chocolate accepted. QA evidence is unchanged.'
+            : ctx.state.mood.caption + ' QA evidence is unchanged.',
         };
       }
       if (c.action === 'forget')
@@ -500,6 +578,7 @@ export function register(on, options = {}) {
         for (const field of Object.keys(ctx.defaults))
           await $.store.delete(ctx.key + '.' + field);
         ctx.state.prefs = { ...ctx.defaults };
+        ctx.state.prefs.qa = false;
         ctx.state.enabled = false;
         ctx.generation++;
         stop(ctx);
@@ -508,7 +587,7 @@ export function register(on, options = {}) {
         ctx.config = null;
         invalidate($);
         return {
-          text: 'Ernesto preferences cleared. QA off. No project files removed.',
+          text: 'Ernesto preferences cleared. QA off for this session; defaults apply next session. No project files removed.',
         };
       }
       if (c.action === 'refresh') {
@@ -522,12 +601,14 @@ export function register(on, options = {}) {
           await $.ui.open({
             id: 'ernesto-evidence',
             title: 'Ernesto evidence',
+            rows: 28,
             focus: true,
             closeOnEscape: true,
           });
-        return {
-          text: detailsText(ctx.state.qa, ctx.state.enabled, ctx.config),
-        };
+        return ctx.interactive &&
+          (ctx.surface === 'terminal' || ctx.surface === 'desktop')
+          ? {}
+          : { text: detailsText(ctx.state.qa, ctx.state.enabled, ctx.config) };
       }
     } catch {
       ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
@@ -559,6 +640,10 @@ export function register(on, options = {}) {
           { ...ctx.state, config: ctx.config },
           () => refresh($, ctx),
           () => $.ui.close({ id: 'ernesto-evidence' }),
+          () => {
+            ctx.state.detailsExpanded = !ctx.state.detailsExpanded;
+            invalidate($);
+          },
         )
       : next(e),
   );

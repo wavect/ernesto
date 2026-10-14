@@ -4,17 +4,31 @@ Ernesto's runtime hooks make no model calls, HTTP requests, telemetry calls,
 subprocess calls, prompt changes, permission decisions or automatic tests.
 Activity is category-only; prompts, tool arguments, output and filenames are
 not retained. Companion mode does not scan project inputs. It displays the
-bundled owner-approved artwork and stores boolean preferences.
+bundled owner-approved artwork and stores boolean preferences. Sarcastic lines
+come from a bundled bank selected by activity category and a bounded in-memory
+counter. No prompt, code, filename or tool argument is used to personalize them.
+`/ernesto quiet on` suppresses this banter, including chocolate replies.
 
-QA is explicitly opted into per session and reviewed project. It reads the
-config, supported runner descriptor, bounded declared source bytes and owned
-run summaries. Preferences use separate keys per workspace hash and field.
+The 0.2.0 candidate defaults QA observation on. Each workspace remembers its
+own on/off preference. Without config, startup probes only workspace/config
+metadata and shows setup needed. With a valid config, it reads the supported
+runner descriptor, bounded declared source bytes and owned run summaries.
+Use `/ernesto qa off` to stop those reads, including after restarting.
+A manifest `qa: false` default can also select companion-only mode. Preferences use separate keys per workspace hash and field.
 Evidence is revalidated from local artifacts, never from a saved green badge.
 QA off and hide stop comparisons and decorative timers. The helper retains
 at most 20 completed summaries or seven days; see the evidence guide.
 
-The explicit Node helper is a different execution boundary: it runs project
-Vitest only on user invocation. It inherits that test environment, and tests
+The explicit Node helper is a different execution boundary. `--setup` creates
+`.ernesto/config.json` with conventional defaults and no test execution.
+`--init` creates missing defaults and then runs the check. Existing config is
+never replaced; malformed config, missing requirements and known symlinks fail
+closed. These modes are user-invoked. The runtime hooks never write project
+files. Configuration includes declared relative input roots, not source text.
+The setup helper's checks are not an atomic filesystem security boundary
+against a malicious same-user process changing ancestors concurrently.
+
+The helper runs project Vitest only on user invocation. It inherits that test environment, and tests
 may access networks. It normalizes structured runner output in memory and writes only scalar
 counts, completion status and snapshot descriptors in an owned unique run
 directory. Raw reports, test names, error bodies and terminal output are never

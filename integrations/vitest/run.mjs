@@ -17,6 +17,7 @@ import {
   SUPPORTED_VITEST_VERSION,
 } from '../../core/evidence.js';
 import { nodeFilesystem } from './node-fs.mjs';
+import { initializeProject } from './setup.mjs';
 export async function pruneEvidence(
   fs,
   { now = Date.now(), maxRuns = 20, maxAgeMs = 7 * 86400000 } = {},
@@ -352,14 +353,45 @@ if (
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   const args = process.argv.slice(2);
-  if (args.length > 1 || args.some((a) => a.startsWith('-'))) {
-    console.error('Usage: node integrations/vitest/run.mjs [workspace-root]');
+  const modes = args.filter((a) => ['--setup', '--init', '--help'].includes(a));
+  const roots = args.filter((a) => !a.startsWith('-'));
+  const usage =
+    'Usage: node integrations/vitest/run.mjs [--setup|--init] [workspace-root]\n--setup: create defaults only; no tests run.\n--init: create defaults if missing, then run the check.\nExisting configuration is never overwritten. Without a root, use the current directory.';
+  if (
+    modes.length > 1 ||
+    roots.length > 1 ||
+    args.some((a) => a.startsWith('-') && !modes.includes(a))
+  ) {
+    console.error(usage);
     process.exitCode = 2;
+  } else if (modes[0] === '--help') {
+    console.log(usage);
   } else {
     try {
-      const result = await runCheck({ root: args[0] ?? process.cwd() });
-      console.log('Ernesto recorded ' + result.record.runId);
-      process.exitCode = result.exitCode;
+      const root = roots[0] ?? process.cwd();
+      if (modes.length) {
+        const setup = await initializeProject(root);
+        console.log(
+          (setup.created ? 'Created' : 'Kept existing') +
+            ' .ernesto/config.json.',
+        );
+        console.log('Declared inputs: ' + setup.config.scope.roots.join(', '));
+        console.log(
+          'Review this scope; custom inputs, excluded files and external services are not inferred.',
+        );
+      }
+      if (modes[0] === '--setup') {
+        console.log(
+          'Setup complete. No tests run. Run this helper without --setup when ready.',
+        );
+      } else {
+        const result = await runCheck({ root });
+        console.log('Ernesto recorded ' + result.record.runId);
+        console.log(
+          `Tests: ${result.record.counts.passed} passed; ${result.record.counts.failed} failed. Use /ernesto refresh or /ernesto evidence in Claude Code.`,
+        );
+        process.exitCode = result.exitCode;
+      }
     } catch (e) {
       console.error('Ernesto helper: ' + e.message);
       process.exitCode = 2;
