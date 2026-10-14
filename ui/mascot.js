@@ -1,3 +1,4 @@
+import { BANTER, personalityLine } from '../core/personality.js';
 // Terminal-native pixel portrait derived from the owner-approved Ernesto master.
 // Two eye stalks, turquoise spiral shell, pink body, white tooth line, no limbs.
 const PALETTE = {
@@ -98,14 +99,8 @@ export function mascotCells(pose, frame = 0, compact = false) {
     String.fromCharCode(...new Uint8Array(Uint32Array.from(packed).buffer)),
   );
 }
-export const POSE_CAPTIONS = {
-  idle: 'Available for professional suspicion.',
-  wake: 'Ready when you are.',
-  focus: 'Reading the interesting bits.',
-  checking: 'Now we find out.',
-  passed: 'Passed. Within the stated scope.',
-  failed: 'A finding. Not a personality flaw.',
-  stale: 'Those checks belong to earlier inputs.',
-  unknown: "I haven't verified that.",
-  chocolate: 'A rigorous compensation policy.',
-};
+export const POSE_CAPTIONS = Object.freeze(
+  Object.fromEntries(
+    Object.keys(BANTER).map((pose) => [pose, personalityLine(pose)]),
+  ),
+);

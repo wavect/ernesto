@@ -86,7 +86,11 @@ response. The pane leads with the result, completion, counts and next action;
 **Scope & record (d)** expands the full input list and record identifiers.
 Use **Compare (r)** to compare inputs, **Close (q)** or Escape to close.
 If the prompt keeps keyboard focus, press Ctrl+X then Tab; Page Down scrolls
-long evidence, and Ctrl+X then Up gives an inline pane more room. Chocolate changes only the companion mood. Forget clears workspace
+long evidence, and Ctrl+X then Up gives an inline pane more room. Ernesto's bundled banter includes playful jabs such as "keyboard goblin" and
+"sentient TODO." Lines rotate on activity, not on redraws or snapshot polls.
+They are scripted personality, not an assessment of you or your code.
+`/ernesto quiet on` silences the banter, including chocolate replies, while
+keeping evidence and controls. Chocolate changes only the companion mood. Forget clears workspace
 preferences and pauses QA for the current session; defaults apply next session.
 It never removes project files.
 

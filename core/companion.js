@@ -1,3 +1,4 @@
+import { personalityLine } from './personality.js';
 export const HELP = `Ernesto 0.2.0, Wavect companion for Claude Code.
 /ernesto setup | doctor | status
 /ernesto evidence | refresh | hide | show | chocolate
@@ -30,21 +31,21 @@ export function parseCommand(args) {
     return { action: 'motion', value: words[1] === 'reduced' };
   return { action: 'invalid' };
 }
-const captions = {
-  idle: 'Available for professional suspicion.',
-  wake: 'Ready when you are.',
-  focus: 'Reading the interesting bits.',
-  activity: 'Work observed. Checks are separate.',
-  chocolate: 'A rigorous compensation policy.',
-  complete: 'Claude finished. Evidence has its own opinion.',
-};
+const actions = ['idle', 'wake', 'focus', 'activity', 'chocolate', 'complete'];
 export function companion(previous, action, now) {
-  if (!Object.hasOwn(captions, action)) return previous;
-  return { pose: action, caption: captions[action], changedAt: now };
+  if (!actions.includes(action)) return previous;
+  const banterIndex = ((previous.banterIndex ?? 0) + 1) % 4;
+  return {
+    pose: action,
+    caption: personalityLine(action, banterIndex),
+    banterIndex,
+    changedAt: now,
+  };
 }
 export const INITIAL_COMPANION = {
   pose: 'idle',
-  caption: captions.idle,
+  caption: personalityLine('idle'),
+  banterIndex: 0,
   changedAt: 0,
 };
 export function safeText(value, max = 240) {

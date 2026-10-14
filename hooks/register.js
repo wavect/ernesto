@@ -565,7 +565,9 @@ export function register(on, options = {}) {
       if (c.action === 'chocolate') {
         move($, ctx, 'chocolate');
         return {
-          text: 'A rigorous compensation policy. QA evidence is unchanged.',
+          text: ctx.state.prefs.quiet
+            ? 'Chocolate accepted. QA evidence is unchanged.'
+            : ctx.state.mood.caption + ' QA evidence is unchanged.',
         };
       }
       if (c.action === 'forget')

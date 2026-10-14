@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { drawBand, drawPane, nextStep } from '../ui/view.js';
 import { mascotCells, mascotPose } from '../ui/mascot.js';
+import { personalityLine } from '../core/personality.js';
 const elements = Object.fromEntries(
   ['Box', 'Text', 'Raster', 'Button'].map((type) => [
     type,
@@ -139,7 +140,7 @@ test('next steps distinguish missing, running, stale, failed and incomplete evid
   );
 });
 test('quiet panes suppress personality and disclosures preserve full evidence behind an explicit action', () => {
-  const e = { props: { bodyColumns: 36 }, surface: 'terminal' };
+  const e = { props: { bodyColumns: 80, bodyRows: 28 }, surface: 'terminal' };
   const quiet = { ...state, prefs: { ...state.prefs, quiet: true } };
   const pane = drawPane(
     elements,
@@ -149,7 +150,16 @@ test('quiet panes suppress personality and disclosures preserve full evidence be
     () => {},
     () => {},
   );
-  assert.doesNotMatch(text(pane), /Ready when you are/);
+  assert.ok(!text(pane).includes(personalityLine('wake')));
+  const chatty = drawPane(
+    elements,
+    e,
+    state,
+    () => {},
+    () => {},
+    () => {},
+  );
+  assert.ok(text(chatty).includes(personalityLine('wake')));
   assert.match(
     text(pane),
     /Completion: complete[\s\S]*Integrity: validated_local_record/,
@@ -168,5 +178,5 @@ test('quiet panes suppress personality and disclosures preserve full evidence be
     find(expanded, 'Button').map((b) => b.key),
     ['refresh', 'details', 'close'],
   );
-  assert.equal(find(expanded, 'Raster').length, 0);
+  assert.equal(find(expanded, 'Raster').length, 1);
 });

@@ -303,6 +303,53 @@ test('source change makes the previous scoped result stale; chocolate preserves 
     (await $.command.run({ command: 'ernesto', args: 'evidence' })).text,
   ).toContain('passed · stale');
 });
+test('sarcastic banter rotates on activity, quiet suppresses it and polling preserves the line and evidence', async ($, on) => {
+  const f = await fixture(on);
+  on('ui.render', () => ({
+    type: 'Text',
+    props: {},
+    children: ['host drawing'],
+  }));
+  await $.session.start({ cwd: root, surface: null, isInteractive: false });
+  await f.clock.advance(150);
+  const before = await $.command.run({ command: 'ernesto', args: 'evidence' });
+  const first = await $.command.run({ command: 'ernesto', args: 'chocolate' });
+  const second = await $.command.run({ command: 'ernesto', args: 'chocolate' });
+  expect(first.text).not.toBe(second.text);
+  expect(second.text).toContain('QA evidence is unchanged.');
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'evidence' })).text,
+  ).toBe(before.text);
+  await $.command.run({ command: 'ernesto', args: 'quiet on' });
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'chocolate' })).text,
+  ).toBe('Chocolate accepted. QA evidence is unchanged.');
+  await $.command.run({ command: 'ernesto', args: 'quiet off' });
+  const answer = await $.command.run({ command: 'ernesto', args: 'chocolate' });
+  const caption = answer.text.replace(' QA evidence is unchanged.', '');
+  const band = await $.ui.mount({
+    plugin: 'ernesto',
+    surface: 'terminal',
+    component: 'AbovePrompt',
+    viewport: { columns: 100, rows: 30 },
+    props: {
+      hasSurvey: false,
+      isWorking: false,
+      maxRows: 6,
+      bodyColumns: 100,
+      scroll: { offset: 0, bodyRows: 6 },
+      view: {},
+    },
+  });
+  expect(await band.find({ type: 'Text', text: caption })).toBeDefined();
+  await f.clock.advance(1600);
+  expect(await band.find({ type: 'Text', text: caption })).toBeDefined();
+  expect(
+    (await $.command.run({ command: 'ernesto', args: 'status' })).text,
+  ).toContain('passed · matched');
+  await band.unmount();
+});
+
 test('new workspace starts with independent QA setup and cannot display prior workspace evidence', async ($, on) => {
   const f = await fixture(on);
   await $.session.start({ cwd: root, surface: null, isInteractive: false });

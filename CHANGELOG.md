@@ -11,7 +11,9 @@ remain supported. The companion gains compact terminal pixel art, a steady
 portrait during routine comparisons and a structured evidence pane with test
 counts, next steps and an expandable scope/record section. Narrow layouts keep
 controls and evidence ahead of decoration. This is a development candidate,
-not a published release.
+not a published release. Bundled sarcastic banter now rotates on activity,
+with playful jabs and a quiet switch that also covers chocolate replies;
+redraws and snapshot polling do not select new jokes.
 
 ## 0.1.0, 14 October 2026
 

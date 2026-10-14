@@ -4,7 +4,10 @@ Ernesto's runtime hooks make no model calls, HTTP requests, telemetry calls,
 subprocess calls, prompt changes, permission decisions or automatic tests.
 Activity is category-only; prompts, tool arguments, output and filenames are
 not retained. Companion mode does not scan project inputs. It displays the
-bundled owner-approved artwork and stores boolean preferences.
+bundled owner-approved artwork and stores boolean preferences. Sarcastic lines
+come from a bundled bank selected by activity category and a bounded in-memory
+counter. No prompt, code, filename or tool argument is used to personalize them.
+`/ernesto quiet on` suppresses this banter, including chocolate replies.
 
 The 0.2.0 candidate defaults QA observation on. Each workspace remembers its
 own on/off preference. Without config, startup probes only workspace/config
