@@ -1,28 +1,28 @@
 WEBVTT
 
 00:00:00.000 --> 00:00:06.000
-QA observation starts on. /ernesto setup
-provides the exact local command.
+Install and restart. Ernesto detects the
+existing project test command.
 
 00:00:06.000 --> 00:00:14.000
-The explicit --init helper creates defaults and
-runs one real passing test.
+Check project runs npm run test directly. No
+helper paths or project JSON.
 
 00:00:14.000 --> 00:00:20.000
-Expand scope and record details. A match covers
-declared inputs at comparison time.
+Details shows actual command output. Exit zero
+does not verify test counts.
 
 00:00:20.000 --> 00:00:26.000
-Editing a declared source input makes the
-previous passing result stale.
+A source edit makes the earlier command input
+comparison stale.
 
 00:00:26.000 --> 00:00:34.000
-A second explicit run really fails. Ernesto
-preserves that failure.
+Check project runs again and really fails. Exit
+status remains separate from freshness.
 
 00:00:34.000 --> 00:00:40.000
-/ernesto quiet on hides the banter while
-preserving the evidence and controls.
+Quiet hides the banter while preserving the
+evidence and controls.
 
 00:00:40.000 --> 00:00:46.000
 Restore banter and offer chocolate. The failed

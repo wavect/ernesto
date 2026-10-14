@@ -1,29 +1,45 @@
 # Privacy and trust boundaries
 
-Ernesto's runtime hooks make no model calls, HTTP requests, telemetry calls,
-subprocess calls, prompt changes, permission decisions or automatic tests.
-Activity is category-only; prompts, tool arguments, output and filenames are
-not retained. Companion mode does not scan project inputs. It displays the
-bundled owner-approved artwork and stores boolean preferences. Sarcastic lines
-come from a bundled bank selected by activity category and a bounded in-memory
-counter. No prompt, code, filename or tool argument is used to personalize them.
-`/ernesto quiet on` suppresses this banter, including chocolate replies.
+Ernesto adds no model calls, HTTP requests, telemetry, prompt changes or
+permission decisions. Activity-driven personality retains only categories and
+a bounded counter, not prompts, tool arguments, filenames or tool output.
+Quiet suppresses bundled banter, including chocolate replies.
 
-The 0.2.0 candidate defaults QA observation on. Each workspace remembers its
-own on/off preference. Without config, startup probes only workspace/config
-metadata and shows setup needed. With a valid config, it reads the supported
-runner descriptor, bounded declared source bytes and owned run summaries.
-Use `/ernesto qa off` to stop those reads, including after restarting.
-A manifest `qa: false` default can also select companion-only mode. Preferences use separate keys per workspace hash and field.
-Evidence is revalidated from local artifacts, never from a saved green badge.
-QA off and hide stop comparisons and decorative timers. The helper retains
-at most 20 completed summaries or seven days; see the evidence guide.
+In 0.3.0, QA defaults on. Startup reads root metadata, package script definitions,
+package-manager markers and optional local Vitest/config metadata to discover
+checks. It never evaluates configuration or executes a process for discovery.
+Existing structured evidence is validated from bounded local artifacts.
+`/ernesto qa off` remembers the workspace choice and stops discovery and input
+comparisons; hide pauses them too. Preferences are booleans under workspace
+hashes. No saved green badge is trusted.
+
+**Check project** and `/ernesto check` are explicit execution actions. They use
+the official host process API with an argv array, workspace cwd, `CI=1` and a
+two-minute timeout. Ernesto does not interpolate a shell command or install
+dependencies. The selected npm/pnpm/yarn/bun script can itself execute arbitrary
+project code and ordinary pre/post scripts, inherit your environment, access
+networks and write files. A supported Vitest fallback can create conventional
+Ernesto config and run the bundled helper on this same explicit action.
+
+For ordinary project commands, Ernesto keeps exit status, bounded input
+snapshots and a sanitized 4,000-character output tail in session memory only.
+It displays that output only after you expand Details. It does not write output
+to project files, its preference store, logs or slash-command responses. This
+is not a promise about Claude's own logs or files created by your scripts.
+Generic results do not establish test counts, coverage or structured test passes.
+
+Turning observation off or hiding Ernesto discards results arriving later and
+stops new comparisons. The host API provides no cancellation handle: a command
+already explicitly launched can continue until completion or the two-minute
+timeout. Ernesto will not restart it automatically. Command results are cleared
+on a fresh session or workspace change. Structured Vitest summaries keep their
+existing bounded retention, at most 20 completed records or seven days.
 
 The explicit Node helper is a different execution boundary. `--setup` creates
 `.ernesto/config.json` with conventional defaults and no test execution.
 `--init` creates missing defaults and then runs the check. Existing config is
 never replaced; malformed config, missing requirements and known symlinks fail
-closed. These modes are user-invoked. The runtime hooks never write project
+closed. These modes are user-invoked. Apart from this explicitly invoked helper, hooks do not write project
 files. Configuration includes declared relative input roots, not source text.
 The setup helper's checks are not an atomic filesystem security boundary
 against a malicious same-user process changing ancestors concurrently.

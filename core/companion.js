@@ -1,11 +1,11 @@
 import { personalityLine } from './personality.js';
-export const HELP = `Ernesto 0.2.0, Wavect companion for Claude Code.
-/ernesto setup | doctor | status
+export const HELP = `Ernesto 0.3.0, Wavect companion for Claude Code.
+/ernesto check | setup | doctor | status
 /ernesto evidence | refresh | hide | show | chocolate
 /ernesto quiet on|off | motion reduced|normal
 /ernesto qa on|off | qa setup | qa enable | forget confirm
 QA observation defaults on. Your on/off choice is remembered for this workspace.
-Companion mood is independent of evidence. No automatic tests, installs, model calls or telemetry.`;
+Companion mood is independent of evidence. Checks run only when you choose Check project or /ernesto check. No automatic installs, model calls or telemetry.`;
 export function parseCommand(args) {
   if (
     typeof args !== 'string' ||
@@ -16,6 +16,7 @@ export function parseCommand(args) {
   const words = args.trim().split(/\s+/);
   const s = words.join(' ');
   if (!s || s === 'help') return { action: 'help' };
+  if (s === 'check') return { action: 'check' };
   if (s === 'status') return { action: 'status' };
   if (s === 'setup' || s === 'qa setup') return { action: 'setup' };
   if (s === 'doctor') return { action: 'doctor' };

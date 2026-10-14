@@ -3,10 +3,11 @@
 Claude says it's done. Ernesto would like to see the tests.
 
 Ernesto is Wavect's small turquoise-shell companion, with two eyes, a taste for
-chocolate, and **scoped Vitest evidence**. Companion-only mode needs no QA
-configuration. Mood and chocolate never determine test status.
+chocolate, and **one-action project checks**. He appears as soon as you restart Claude
+Code after installation. No project configuration is required. Mood and
+chocolate never determine test status.
 
-**Development version 0.2.0; published stable 0.1.0.** Check the
+**Development version 0.3.0; published stable 0.1.0.** Check the
 [versioned release record](https://github.com/wavect/ernesto/releases) for
 publication status, approved checksums and tested limitations. A source branch
 or successful source installation alone does not establish an approved release.
@@ -15,51 +16,46 @@ directory submission has been made.
 
 ## Get started
 
-**Development candidate 0.2.0.** This simpler setup flow is not in the
-published 0.1.0 release yet. To review this candidate from its checkout,
-start Claude Code in your project with `claude --plugin-dir /path/to/reviewed/ernesto`
-(replace that review-only path). Published versions use the same installation
-command below; check the [release record](https://github.com/wavect/ernesto/releases)
-for what has actually shipped.
+**Development candidate 0.3.0, not published yet.** To review it, launch
+`claude --plugin-dir /path/to/reviewed/ernesto` from your project. The regular
+marketplace update does not contain this candidate until it is merged.
 
-1. Install Ernesto, then restart Claude Code:
+1. Install Ernesto and restart Claude Code:
 
    ```sh
    claude plugin install ernesto --marketplace wavect/ernesto
    ```
 
-2. Open Claude Code in your project and type:
+2. Ernesto appears immediately. Open `/ernesto evidence`, then choose
+   **Check project**. Or type `/ernesto check` directly.
 
-   ```text
-   /ernesto setup
-   ```
+Ernesto detects an existing `test`, `check`, `verify` or `lint` package script
+and shows the selected command. It uses your project's package manager and
+installed tools. No copying helper commands, hunting cache paths or writing
+JSON. Nothing runs until you request a check; no dependencies are installed.
+Package scripts execute project code, including package-manager lifecycle
+scripts, with your environment. Use this action in projects you trust.
 
-3. Copy the command Ernesto prints into a terminal **in your project**. It
-   creates a default `.ernesto/config.json` if missing and runs your first
-   Vitest check. Existing configuration is kept. To create defaults without
-   running tests, use the separate `--setup` command shown there.
+A completed command shows its actual exit code. **Test counts and coverage
+remain unverified** unless the separate structured Vitest integration validates
+a report. Choose **Details** to see bounded command output. Source changes
+make the previous command's input comparison stale. **Compare** rereads
+inputs without running a check.
 
-4. Type `/ernesto evidence` to inspect the result. Source edits make the
-   earlier result stale; run the same helper command again when ready.
-
-You do not need to find the plugin cache, write JSON by hand or enable QA
-again every session. **QA observation defaults on** and picks up a valid
-project config automatically. It never launches tests. `/ernesto qa off`
-remembers a companion-only preference for this workspace, including restarts;
-`/ernesto qa on` restores observation.
-
-The tested baseline is Claude Code **2.1.296**, Node.js **24** and a
-project-local **Vitest 4.1.11**. Other hosts and runners are not verified.
-`/ernesto doctor` explains missing requirements. Ernesto never installs or
-changes your project's dependencies. See the [getting-started guide](docs/getting-started.md)
-for a short walkthrough and [installation](docs/install.md) for in-session
-installation, scopes, updates and removal.
+Without a supported command, the companion still works immediately. Detection
+currently covers npm, pnpm, yarn and bun package scripts; it does not invent a
+check for other project types. `/ernesto doctor` explains what was detected.
+The tested host is Claude Code **2.1.296** on macOS. The optional detailed
+integration needs Node **24** and local **Vitest 4.1.11**; ordinary project
+scripts use their own installed toolchain. See [the walkthrough](docs/getting-started.md)
+and [installation](docs/install.md).
 
 ## Everyday controls
 
 ```text
 /ernesto                 help and current status
-/ernesto setup           exact setup and test commands
+/ernesto check           run the detected project check explicitly
+/ernesto setup           show readiness and the detected command
 /ernesto doctor          requirements and configuration checks
 /ernesto evidence        result, scope and snapshot details
 /ernesto refresh         re-read local evidence, without running tests
@@ -83,8 +79,8 @@ comparisons keep his expression steady while freshness remains explicitly labele
 In an interactive session, `/ernesto evidence` opens the pane without dumping
 the record into your conversation. Non-interactive sessions retain the full text
 response. The pane leads with the result, completion, counts and next action;
-**Scope & record (d)** expands the full input list and record identifiers.
-Use **Compare (r)** to compare inputs, **Close (q)** or Escape to close.
+**Details (d)** expands the full input list and record identifiers.
+Use **Check project** to run, **Compare (r)** to compare inputs, **Close (q)** or Escape to close.
 If the prompt keeps keyboard focus, press Ctrl+X then Tab; Page Down scrolls
 long evidence, and Ctrl+X then Up gives an inline pane more room. Ernesto's bundled banter includes playful jabs such as "keyboard goblin" and
 "sentient TODO." Lines rotate on activity, not on redraws or snapshot polls.
@@ -96,42 +92,46 @@ It never removes project files.
 
 ## Defaults and honest results
 
-Generated defaults cover conventional source/test directories, root JavaScript
-and TypeScript files, recognized configuration files and lockfiles. Common config and lock paths
-are included even when absent, so adding them invalidates earlier snapshots. Review the printed roots and add custom inputs to
-`.ernesto/config.json`; automatic discovery cannot infer every project layout.
-The scope stays explicit, bounded and unchanged on subsequent runs. Default
-secret, dependency and output exclusions still apply. No configuration files
-are executed for discovery. See [the evidence guide](docs/evidence.md).
+No `.ernesto/config.json` is required for project commands. Ernesto selects a
+bounded conventional input scope in memory and compares snapshots before,
+after and following your explicit command. Missing scope, read errors, known
+intermediate edits or observation gaps yield **inputs unknown**. A snapshot
+match describes those inputs at comparison time, not the whole project or
+business correctness. Command exit and input freshness remain separate.
 
-A project without configuration shows **QA on, setup needed**, never a pass.
-Once configured, outcome, freshness, completeness and integrity remain separate:
-**not run, running, failed, passed for recorded scope, stale, and unknown**.
-A matched snapshot describes captured inputs at the displayed comparison time.
-It does not prove business correctness or prevent same-user artifact tampering.
+For projects using the detailed Vitest integration, existing configuration and
+strict evidence v1 remain supported. A local Vitest 4.1.11 project without a
+package check script can use **Check project** to create conventional defaults
+and run the shipped helper internally. Existing config is never overwritten. A valid configured Vitest check takes
+priority over package scripts, preserving custom roots and filters.
+Custom inputs and filters belong in that optional advanced configuration.
+See [the evidence guide](docs/evidence.md).
 
-The explicit helper runs project code with your environment and may access
-network services. Ernesto's own hooks add no model calls, telemetry, external
-requests or subprocesses. Read [privacy boundaries](docs/privacy.md) before
-loading a privileged mod. Companion-only mode needs no QA configuration.
+QA observation defaults on. `/ernesto qa off` remembers your workspace choice
+and stops discovery/comparisons. Hide pauses observation too. A command you
+already explicitly started may continue until it finishes or its two-minute
+host timeout; turning observation off discards its later result. Ernesto adds
+no model calls, telemetry or network requests. User project commands can
+access networks and write files. Read [privacy boundaries](docs/privacy.md).
 
 ## Recorded CLI demo
 
 [![Recorded CLI evidence pane and companion](docs/media/ernesto-cli-poster.png)](docs/media/ernesto-cli-candidate.mp4)
 
-The **unreleased 0.2.0 candidate** [46-second recording](docs/media/ernesto-cli-candidate.mp4)
-uses actual Claude Code terminal cells from one synthetic local arithmetic test.
-It shows default-on QA and guided setup, an explicit real passing run, expanded
-scope, an edit making the old result stale, a real failure, quiet mode and the
-new sarcastic chocolate response leaving that failure unchanged.
+The **unreleased 0.3.0 candidate** [46-second recording](docs/media/ernesto-cli-candidate.mp4)
+uses actual Claude Code terminal cells from one synthetic arithmetic test. It
+shows immediate readiness without project config, the native Check project
+button executing `npm run test`, actual command output in Details, a stale
+source edit, a real failure, quiet mode and sarcastic chocolate.
 
-The native pane and band are cropped into a labeled presentation; headings and
-bottom captions are editorial overlays. Typing and waits between stages are
-omitted. The helper runs explicitly in a separate local process. No model prompt
-or model call was used. [English transcript](docs/media/ernesto-cli-en.md), plus
-German, Spanish and Chinese transcripts and captions, accompany the recording.
-The plugin UI remains English. Historical 0.1.0 media stays in its immutable
-release; this candidate demo does not establish a new published release.
+The native pane and band are cropped into a labeled presentation; headings
+and bottom captions are editorial overlays. Typing and between-stage waits
+are omitted. The command runs directly through the explicit native action,
+not a copied helper. No model prompt or model call was used. Command success
+is shown separately from verified test counts and coverage. An
+[English transcript](docs/media/ernesto-cli-en.md), plus German, Spanish and
+Chinese transcripts and captions, accompany it. The plugin UI remains English.
+Historical tagged media stays unchanged; this demo does not establish release.
 
 ## Development and checks
 

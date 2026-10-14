@@ -82,9 +82,7 @@ test('band retains other drawing; narrow layout gives text and survey yields', a
   });
   const ui = await $.ui.mount({ ...band, surface: 'terminal' });
   expect(await ui.find({ type: 'Text', text: 'host drawing' })).toBeDefined();
-  expect(
-    await ui.find({ type: 'Text', text: /QA on.*setup needed/ }),
-  ).toBeDefined();
+  expect(await ui.find({ type: 'Text', text: /Ready/ })).toBeDefined();
   await ui.unmount();
   const narrow = await $.ui.mount({
     ...band,
@@ -113,8 +111,8 @@ test('read-denied setup is useful, unknown and never runs shell text', async ($,
     isInteractive: false,
   });
   const setup = await $.command.run({ command: 'ernesto', args: 'qa setup' });
-  expect(setup.text).toContain('Project setup is needed');
-  expect(setup.text).toContain('--init');
+  expect(setup.text).toContain('Ernesto is ready. No setup required.');
+  expect(setup.text).not.toContain('--init');
   const enable = await $.command.run({ command: 'ernesto', args: 'qa enable' });
-  expect(enable.text).toContain('QA observation on; setup needed');
+  expect(enable.text).toContain('QA observation on');
 });

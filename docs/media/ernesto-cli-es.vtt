@@ -1,29 +1,29 @@
 WEBVTT
 
 00:00:00.000 --> 00:00:06.000
-QA empieza activado. /ernesto setup muestra el
-comando local.
+Instala y reinicia. Ernesto detecta el comando
+de pruebas existente.
 
 00:00:06.000 --> 00:00:14.000
---init, iniciado explícitamente, crea la
-configuración y ejecuta una prueba real que
-pasa.
+Check project ejecuta npm run test directamente,
+sin rutas auxiliares ni JSON.
 
 00:00:14.000 --> 00:00:20.000
-Despliega alcance y registro. La coincidencia
-cubre solo las entradas declaradas.
+Details muestra la salida real. Un código cero
+no verifica el número de pruebas.
 
 00:00:20.000 --> 00:00:26.000
-Editar el código declarado deja desactualizado
-el resultado anterior.
+Un cambio de código deja desactualizada la
+comparación de entradas anterior.
 
 00:00:26.000 --> 00:00:34.000
-Otra ejecución explícita falla de verdad.
-Ernesto conserva el fallo.
+Check project vuelve a ejecutarse y falla. El
+código de salida y la vigencia son
+independientes.
 
 00:00:34.000 --> 00:00:40.000
-/ernesto quiet on oculta bromas y mantiene
-evidencia y controles.
+Quiet oculta las bromas y mantiene la evidencia
+y los controles.
 
 00:00:40.000 --> 00:00:46.000
 Reactiva las bromas y ofrece chocolate. El

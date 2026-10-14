@@ -1,11 +1,11 @@
 {
   "capture": "Actual Claude Code terminal cells sampled at 8 fps, cropped into companion/pane views; labeled editorial headings/captions; typing and between-stage waits omitted.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "release_type": "unreleased development candidate",
   "host": "Claude Code 2.1.296",
   "os": "macOS 26.5.1",
   "node": "24.3.0",
-  "runner": "Vitest 4.1.11",
+  "runner": "npm run test / Node built-in test runner",
   "dimensions": [
     1920,
     1080
@@ -15,56 +15,57 @@
   "video_fps": 12,
   "model_calls": 0,
   "synthetic_data": true,
-  "helper_exit_codes": [
+  "command_exit_codes": [
     0,
     1
   ],
-  "runtime_source_commit": "b3332becaedb5c2792f287f4b1f45d0734a9a099",
+  "runtime_source_commit": "c27a8596470ecf946faa90eee4b51dd6f5678485",
   "source_sha256": {
-    ".claude-plugin/plugin.json": "a9ce8df1a10c6ff5673c1ce8a93c4d785011087a359a95ff0520d4d0ab006862",
-    "core/companion.js": "b76a3769c899503485adacaa4f639fd50370d9bca180f25aaf5acaf785a4523b",
+    ".claude-plugin/plugin.json": "371662166556c1b01bf994529908bd718a615433bfaad410f8c814de189003e2",
+    "core/companion.js": "d45e4c3a77cc62b1733c9fa9885fec32f6c9da422531c251b596b16dc798bfa6",
     "core/evidence.js": "b20a9f98d301c033c389dfeceb4fd054223136f712348b64cd276622ae7a5de2",
     "core/personality.js": "50c524e5a6464d067085880ec507b2e99b309d76436d88112f0ec2e2e5269616",
+    "core/project.js": "6d4057d6a2e4af07b7d4c886963395ac1e68aefdcb50824f33e9718bc6b094b4",
     "core/setup.js": "efb377e76e77b3013f1c982140b91b9d52ce5e81c1456c48f52f708eda4c28d7",
     "core/snapshot.js": "6a6cb7de82535a23af841eaf01e72fba5bce639661b11f4064e3b68bd1f148e1",
     "hooks/hooks.json": "179d3376cd6c0c7467a63fb5213b144c7e070c26ae5bd144d7d03b91fb88cabd",
-    "hooks/register.js": "0074e362a2ef293007e7b00e9a440b2169565bb3657cac12a88d815939bf15c7",
+    "hooks/register.js": "261201fee5cc285097059cb0653d22eaa3d545e4252c5b9ce8fd0692af5a5f8b",
     "integrations/vitest/errors-reporter.mjs": "d6a8a7a46e2356c9a2bf1dd54dcca46c191ffffeb653ac74626b4ee4ae599425",
     "integrations/vitest/node-fs.mjs": "b8f6fe8ec9971221e41dc48713ac536e0aa546af4c75385319f1bd2636339405",
     "integrations/vitest/report.mjs": "a467c1546834ebca8fb5e9820730e6ba5c1b0afb5e11c33464281e18d511b55f",
-    "integrations/vitest/run.mjs": "ba879fdfd18f69fac21ff8d62df1c107d210ee5dfab995eaff37b046de11f032",
+    "integrations/vitest/run.mjs": "2b5facbc0aa2efe0a51441f34e8ecb7dc72de2dee529cd2896627186a932060f",
     "integrations/vitest/setup.mjs": "0dc8bc862dab348c1f6017935671fe410f136aaea9f8fc4b2c2eb631b798e611",
     "ui/mascot.js": "98376fa19534a1c814ce71625d0a30e2701bf527e027907a9744d466a35e0c5d",
-    "ui/view.js": "b7fe416e0a320dbf11bdb334fb7df8114fb062cfcda9b1911182eeb83efb7582"
+    "ui/view.js": "30d9242df48dfc90bbaae339008ac82c70a23824d8f37a26d0accb525b16ee07"
   },
   "stages": [
     {
-      "label": "QA observation starts on. /ernesto setup provides the exact local command.",
+      "label": "Install and restart. Ernesto detects the existing project test command.",
       "start_seconds": 0,
       "end_seconds": 6
     },
     {
-      "label": "The explicit --init helper creates defaults and runs one real passing test.",
+      "label": "Check project runs npm run test directly. No helper paths or project JSON.",
       "start_seconds": 6,
       "end_seconds": 14
     },
     {
-      "label": "Expand scope and record details. A match covers declared inputs at comparison time.",
+      "label": "Details shows actual command output. Exit zero does not verify test counts.",
       "start_seconds": 14,
       "end_seconds": 20
     },
     {
-      "label": "Editing a declared source input makes the previous passing result stale.",
+      "label": "A source edit makes the earlier command input comparison stale.",
       "start_seconds": 20,
       "end_seconds": 26
     },
     {
-      "label": "A second explicit run really fails. Ernesto preserves that failure.",
+      "label": "Check project runs again and really fails. Exit status remains separate from freshness.",
       "start_seconds": 26,
       "end_seconds": 34
     },
     {
-      "label": "/ernesto quiet on hides the banter while preserving the evidence and controls.",
+      "label": "Quiet hides the banter while preserving the evidence and controls.",
       "start_seconds": 34,
       "end_seconds": 40
     },
@@ -74,24 +75,24 @@
       "end_seconds": 46
     }
   ],
-  "privacy_review": "Every exported native cell crop was checked for private paths and account identifiers; launcher, login footer, command history and setup command paths are outside the crops. Only synthetic scope names, scalar evidence and public versions appear. All unique exported frames were reviewed.",
+  "privacy_review": "Every exported native cell crop was checked for private paths and account identifiers; launcher, login footer, command history and setup command paths are outside the crops. Only synthetic test output, scope names, command exits and public versions appear. All unique exported frames were reviewed.",
   "files": {
-    "ernesto-cli-0.png": "a87514530ae09118f765e92a21751b29d5e5cecf019ea5d694bd53d51a83e4b7",
-    "ernesto-cli-1.png": "edd13ccf804e8dc9ebc0e5d8fd0b741bfd422df042d4bfc7e525c57cff2ca8fb",
-    "ernesto-cli-2.png": "82ce2f5c572f7bfeb11091d487b4c5ad4dd00b6064b25cd91411cd89847758a8",
-    "ernesto-cli-3.png": "22669cf6350d1aae02d449da0ce5ced92ee5357f3823312710ef4d1d2ae932db",
-    "ernesto-cli-4.png": "ca1962f943f5e55d13dcdb8ae1fce56dc30b984fab52c3f975a30f65f3d59053",
-    "ernesto-cli-5.png": "388dd9f08ca27e222f327265a3d3145e8b20c8bd974b7305e3f35e2b8b516e36",
-    "ernesto-cli-6.png": "217613c05078547a11fc8405cefe70ec3f54d1e82fae74bbe6f86e26a7a28f5f",
-    "ernesto-cli-candidate.mp4": "1e6a77786659232c59772bb78bec91dc4e4f18dc50f291258b745e5e87f7dcfc",
-    "ernesto-cli-de.md": "c62e176e380511bad35f5a1df15301116041ecc2e710c7e463a166bd13f0a098",
-    "ernesto-cli-de.vtt": "b4f9893ce49f07c32e83c83569ab12df656f35f5c14a8ca27c6e0d864b15c596",
-    "ernesto-cli-en.md": "935502ebefdee41b38357393680825be6abc78f9099fc1b7c7035fec67e407c9",
-    "ernesto-cli-en.vtt": "29c79213afaf11f0da99313399e531b6b5ccf02ffdcc61cfbcaf2a8ba1d233ea",
-    "ernesto-cli-es.md": "8fef0763baceb6bcc7aa2ecd070e249dbe0a55aebb54631b7bf734b181b7f1cb",
-    "ernesto-cli-es.vtt": "bc331cce979570a29db781863b2b7d8403e988a03485aa993ba1d3ae41076f8c",
-    "ernesto-cli-poster.png": "edd13ccf804e8dc9ebc0e5d8fd0b741bfd422df042d4bfc7e525c57cff2ca8fb",
-    "ernesto-cli-zh.md": "5bc27bb99ecf1742c9bd4bdcb72b42ac50d3d793bfc1ce8a57fdb62f849032de",
-    "ernesto-cli-zh.vtt": "92684b139c0861393d46b2eb69b233511449eab249415abb70019565faa0f375"
+    "ernesto-cli-0.png": "0f30e4165c23ebb2d31e2769606eac0a0f3b79f0ccbcfb2b6e5becd2570fd27d",
+    "ernesto-cli-1.png": "dfdff03fb906b65dcfe5ac4c2215f03c43312513102011110c928ea73bdf8cb8",
+    "ernesto-cli-2.png": "917fc80cec39161cdade76c0422a25235668818afad1ac7baa010b235c839375",
+    "ernesto-cli-3.png": "03158469c4f518952195479c9609a8358b4bb3a46af3f770e438c787de2d8a0f",
+    "ernesto-cli-4.png": "a688e15382ad1869efec4e1b0ed6e1de8bb2f878fa1c6c60ca9ca2fc724d364b",
+    "ernesto-cli-5.png": "e229de53037c651a3f538489e464e1561b57397aafb227530ec9d9ca992058cc",
+    "ernesto-cli-6.png": "4a8e8564fc28818a59c2fad04f6ae05d1ff33d63abe4c20d87a5dec01adc9ab8",
+    "ernesto-cli-candidate.mp4": "37379f1bf6fa58739df5a511ab7faaddfbec34ef03a59a3093bc3124f3d8ceb6",
+    "ernesto-cli-de.md": "616a63b899f7cdea842ab51a756b28b685f37a255daf0ed0849c3dad82c00e52",
+    "ernesto-cli-de.vtt": "b23a2049e5cd8642935df183a3d526a0fad10a8089218128d8f13dff9c5cc11b",
+    "ernesto-cli-en.md": "9d7b579d0568fead4d1d897cd02aea84dbafadc5598d1f48bb04c5b92d39e375",
+    "ernesto-cli-en.vtt": "6ecf1d0fdec961f0834e76205b7ac77c7d30c78b89c162512abbc094d5181ca1",
+    "ernesto-cli-es.md": "07f1f3651c26cd56e11cbab3f4b1d7179dc5e866ad32184d06165701c2676247",
+    "ernesto-cli-es.vtt": "41f629b28a5da48727ba6d47a97b1b4552ffe99a9746213958b27cd2487180d5",
+    "ernesto-cli-poster.png": "dfdff03fb906b65dcfe5ac4c2215f03c43312513102011110c928ea73bdf8cb8",
+    "ernesto-cli-zh.md": "56e4b34b99c99e1b5c9a0839e454bf0e263dd8ac313ab5190eea1db8f5fa6059",
+    "ernesto-cli-zh.vtt": "37c6182083271097f7b82cabd8b932040ecb32b93c2ceca9979068f9d284f821"
   }
 }

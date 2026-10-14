@@ -1,15 +1,15 @@
-Recorded from actual Claude Code 2.1.296 terminal output on macOS 26.5.1, using the unreleased Ernesto 0.2.0 development candidate, Node 24.3.0 and Vitest 4.1.11. The fixture is one synthetic local arithmetic test. Native terminal cells are cropped into labeled companion and evidence views; headings and bottom captions are editorial overlays. Typing and waits between stages are omitted. Terminal output was sampled at 8 fps and encoded at 12 fps. The helper ran explicitly as a separate local process, once passing and once failing. No model prompt or model call was used. There is no narration. A snapshot match covers declared inputs at comparison time, not external services, business acceptance or tamper-proof execution. Translated captions do not imply a localized plugin UI.
+Actual Claude Code 2.1.296 terminal output on macOS 26.5.1 using unreleased Ernesto 0.3.0 and Node 24.3.0. One synthetic arithmetic test, executed through the native Check project button as npm run test. No Ernesto project configuration or manual helper command was used. Native cells are cropped into labeled companion and evidence views; titles and bottom captions are editorial overlays. Typing and between-stage waits are omitted. Sampled at 8 fps, encoded at 12 fps, no narration. No model prompt or model call was used. The command really exited zero, then one. Command success does not establish verified test counts or coverage; input matches cover bounded inputs at comparison time, not business acceptance or tamper-proof execution. Translations do not imply localized plugin UI.
 
-QA observation starts on. /ernesto setup provides the exact local command.
+Install and restart. Ernesto detects the existing project test command.
 
-The explicit --init helper creates defaults and runs one real passing test.
+Check project runs npm run test directly. No helper paths or project JSON.
 
-Expand scope and record details. A match covers declared inputs at comparison time.
+Details shows actual command output. Exit zero does not verify test counts.
 
-Editing a declared source input makes the previous passing result stale.
+A source edit makes the earlier command input comparison stale.
 
-A second explicit run really fails. Ernesto preserves that failure.
+Check project runs again and really fails. Exit status remains separate from freshness.
 
-/ernesto quiet on hides the banter while preserving the evidence and controls.
+Quiet hides the banter while preserving the evidence and controls.
 
 Restore banter and offer chocolate. The failed result stays failed.

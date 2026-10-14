@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Explicit user invocation only. No downloads, shell evaluation, or mod subprocesses.
+// Explicit user invocation only. No downloads or shell evaluation. The mod can invoke this only on an explicit check action.
 import * as fsp from 'node:fs/promises';
 import { watch } from 'node:fs';
 import path from 'node:path';

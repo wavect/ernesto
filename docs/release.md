@@ -1,25 +1,41 @@
 # Release verification and recovery
 
-Implementation candidate: **0.2.0, unreleased**. Published stable: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
+Implementation candidate: **0.3.0, unreleased**. Published stable: **0.1.0**. The [versioned release record](https://github.com/wavect/ernesto/releases) is authoritative for publication status, approved source, checksums and post-publication verification. Development and source-main installation checks do not independently establish an approved tagged release or production website deployment. No Anthropic directory submission or endorsement is claimed.
 
 The published 0.1.0 release includes companion controls, optional scoped Vitest evidence, the explicit helper, synthetic examples, original MIT source and Wavect artwork under its separate display/redistribution terms. [ASSET_LICENSE.md](../ASSET_LICENSE.md) retains Wavect artwork and trademark rights; MIT does not apply to the mascot. Future colony, business acceptance, delivery-receipt and multi-runner features are absent.
 
-## 0.2.0 candidate scope
+## 0.3.0 candidate scope
 
-The candidate changes onboarding, default observation and terminal presentation. QA defaults on,
-remembers per-workspace overrides and connects to valid config automatically.
-The explicit helper can generate defaults with `--setup` or initialize and run
-with `--init`; existing config is preserved. The hook runtime still performs no
-project writes or automatic test execution. Fresh installation, upgrade from
-0.1.0, requirements, persistence and package checks must be recorded for this
-candidate separately. The redesigned companion and evidence pane require their own narrow/wide, theme,
-keyboard and reduced-motion checks. The current 46-second recording captures the
-unreleased 0.2.0 runtime: default-on setup, an explicit real pass, scope disclosure,
-a stale edit, real failure, quiet mode and sarcastic chocolate. Its seven stages,
-poster and four caption/transcript languages replace the source-branch demo.
-Native cells are cropped with labeled editorial overlays. Runtime hashes and
-media checksums are in `docs/media/recording.json`; tagged 0.1.0 media is unchanged.
-No new release, tag or website availability claim is established by this branch.
+The companion works immediately after installation and restart. Project
+configuration is optional. Check project and `/ernesto check` explicitly run
+an existing package script through the official host process API, with no
+shell interpolation, dependency installation or startup process. Command
+completion and input freshness do not claim structured test passes or counts.
+Output is bounded, session-only and disclosed through Details. Late results
+are discarded after off/hide/workspace changes; the host API has no cancellation
+handle for an already launched command. Existing strict Vitest evidence and
+config stay compatible, with automatic initialization on the explicit action
+for detected Vitest-only projects. This replaces 0.2.0's manual-helper onboarding.
+
+Candidate validation: 39 official host tests and 36 Node tests passed,
+including real Vitest negative paths and deterministic package checks. Strict
+SDK validation confirms the only new privileged operation is process.run on
+the explicit action. Format and diff checks passed; npm audit found zero
+vulnerabilities. Real macOS CLI checks exercised a config-free npm command,
+button execution, Details output, actual exits zero/one and stale inputs.
+A separate Vitest-only project initialized defaults via the button and showed
+one verified pass, a stale edit and one verified failure. No model prompts or
+model messages were used. These checks do not qualify other operating systems,
+Desktop UI or real pnpm/yarn/bun execution. Public-source update and tagged
+release validation are not run because this candidate is not published.
+
+The refreshed 46-second actual terminal demo records the config-free npm flow,
+including Details, stale input, failure, quiet and chocolate. Eleven unique
+exported frames were visually reviewed. All 552 H.264 frames decode; media and
+runtime hashes, seven stage boundaries and all four caption/transcript languages
+are reconciled in `media/recording.json`. Historical checks below retain their
+original scope. No new tag, release or website availability is established by
+this branch. The earlier 0.2.0 source update had no tagged release.
 
 ## Reviewable evidence
 

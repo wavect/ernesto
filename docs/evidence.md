@@ -1,24 +1,43 @@
 # Reviewed local test evidence
 
-In the 0.2.0 candidate, QA observation defaults on. `/ernesto qa off` remembers a workspace-specific off switch across sessions. A missing or invalid config shows setup needed, never a pass. Ernesto never starts a test process. The separate helper requires Node.js 24 and an already installed project-local Vitest **4.1.11**. It does not fetch packages, evaluate shell strings, change package scripts, or infer success from chat, terminal text, a screenshot, or exit zero alone.
+In the 0.3.0 candidate, no configuration is needed to use the companion or run
+an existing package check. `/ernesto check` or **Check project** explicitly
+runs the detected script; no startup hook runs tests. QA observation defaults
+on and remembers a workspace-specific off switch.
+
+Ordinary project commands report actual exit status separately from input
+freshness. Exit zero is **completed**, not a verified test pass. Test counts
+and coverage remain unverified. Bounded conventional snapshots compare input
+bytes before, after and following the command. Missing/incomplete scope,
+known intermediate writes or observation gaps yield unknown. Generic outcomes
+and bounded output are session-only; Details discloses output explicitly.
+
+The rest of this guide describes the optional **structured Vitest integration**,
+which retains its strict evidence v1 contract. It needs Node.js 24 and already
+installed local Vitest **4.1.11**. It does not fetch packages, change package
+scripts or infer success from conversation, terminal text or exit zero alone.
+A valid configured Vitest check takes priority over package scripts, preserving
+custom roots and filters. Existing config stays supported. When no package
+check script exists but local
+Vitest 4.1.11 is installed, Check project invokes this integration internally.
 
 Review the helper and your test configuration before invoking it. Tests execute project code with your normal environment and may access network services. Local records are structurally validated observations, **not tamper-proof attestation**: a process with the same user access can fabricate reports and hashes. Independent CI and review remain the enforcement layer.
 
 ## Setup and explicit run
 
-Start with `/ernesto setup`. It prints the exact installed helper command.
-Run it from your project terminal with `--setup` to create defaults only, or
-`--init` to create defaults if missing and explicitly run the first check.
-Neither mode overwrites an existing configuration, changes package scripts or
-installs dependencies. No separate per-session enable step is required.
+**Check project** initializes missing conventional config and runs the bundled
+helper for detected Vitest-only projects. Existing config is never replaced.
+No separate per-session enable step is required. `/ernesto qa on` reconnects
+configured detailed evidence and clears the session-only command result. Advanced users may still
+invoke the helper with `--setup` to create defaults only, or `--init` to create
+defaults and run explicitly. Normal package checks need neither mode nor JSON.
 
 Default discovery reads the project root listing and supported runner metadata;
 it does not evaluate project configuration. It selects conventional input
 folders, root JavaScript/TypeScript files, recognized config files and lockfiles.
 It skips hidden files, arbitrary JSON, secret/dependency/output names and
 unrecognized folders. It refuses unsafe conventional directories and scopes
-above the existing bounds. Review the roots printed before the run and add
-custom inputs yourself. Common config and lock paths are declared even when absent, so adding them
+above the existing bounds. Review the selected roots in Details and add custom inputs yourself. Common config and lock paths are declared even when absent, so adding them
 invalidates an earlier snapshot. Adding other custom roots requires a config edit. Generated config files are private to the user by
 filesystem mode; review what to track in Git and ignore `.ernesto/runs/`.
 

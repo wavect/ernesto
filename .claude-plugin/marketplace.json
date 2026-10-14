@@ -10,7 +10,7 @@
     {
       "name": "ernesto",
       "source": "./",
-      "description": "A companion with optional scoped Vitest evidence"
+      "description": "Ready-to-use companion with explicit project checks and optional Vitest evidence"
     }
   ]
 }

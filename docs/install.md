@@ -46,16 +46,16 @@ Verify with `claude --version`, `claude plugin marketplace list`,
 `/reload-plugins` where supported, then run `/ernesto` in a fresh session.
 A registered marketplace alone does not prove loaded hooks or working UI.
 
-## First use in the 0.2.0 candidate
+## First use in the 0.3.0 candidate
 
-After restart, open Claude Code in your project and run `/ernesto setup`.
-Copy its exact installed helper command into your project terminal. `--init`
-creates missing conventional defaults and runs one explicit check; `--setup`
-creates defaults without running tests. Existing configuration is preserved.
-QA observation defaults on and remembers `/ernesto qa off` for each workspace.
-Use `/ernesto doctor` for requirements and `/ernesto evidence` for the result.
-The published 0.1.0 release retains its earlier manual, per-session QA setup.
-See [the walkthrough](getting-started.md).
+Restart Claude Code in your project. Ernesto appears immediately. Open
+`/ernesto evidence` and choose **Check project**, or type `/ernesto check`.
+It uses an existing package test/check script. No project config or helper-path
+copying is required. Nothing runs at startup. `/ernesto doctor` explains the
+detected command. No command detected? The companion is still ready.
+QA observation defaults on and remembers `/ernesto qa off` per workspace.
+See [the walkthrough](getting-started.md). This branch is unreleased. A source
+installation and a tagged release are separate; published stable remains 0.1.0.
 
 ## Local review
 

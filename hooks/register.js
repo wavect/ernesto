@@ -16,7 +16,13 @@ import {
   MAX_RECORD_BYTES,
 } from '../core/evidence.js';
 import { drawBand, drawPane, detailsText, statusText } from '../ui/view.js';
-import { helperCommand } from '../core/setup.js';
+import { defaultCheckConfig } from '../core/setup.js';
+import {
+  detectProject,
+  commandSummary,
+  compareCommand,
+  outputPreview,
+} from '../core/project.js';
 async function workspaceFS($, cwd) {
   const rootInfo = await $.fs.stat(cwd, { resolve: true });
   const root = rootInfo.realPath?.replace(/\/$/, '');
@@ -102,7 +108,12 @@ function createContext(options) {
       enabled: false,
       frame: 0,
       detailsExpanded: false,
+      project: null,
+      projectRun: null,
     },
+    checkTask: null,
+    projectFS: null,
+    projectScope: null,
     supported: false,
     cwd: '',
     surface: null,
@@ -168,14 +179,20 @@ function move($, ctx, action) {
   }
   invalidate($);
 }
-async function refresh($, ctx) {
+async function refresh($, ctx, checkToken = null) {
   if (
     !ctx.state.enabled ||
     ctx.state.prefs.hidden ||
     ctx.busy ||
-    !ctx.supported
+    !ctx.supported ||
+    (ctx.checkTask && ctx.checkTask !== checkToken)
   )
     return;
+  if (!ctx.state.project) await discover($, ctx);
+  if (ctx.state.projectRun?.kind === 'command') {
+    await refreshCommand($, ctx);
+    return;
+  }
   if (!ctx.fs || !ctx.config) {
     const connecting = ctx.generation;
     try {
@@ -185,7 +202,7 @@ async function refresh($, ctx) {
         ctx.state.qa = {
           ...initialEvidence(),
           reason:
-            'Setup needed. Run /ernesto setup for the exact local command.',
+            'Companion ready. Choose Check project to run a detected project check.',
         };
         invalidate($);
       }
@@ -350,7 +367,7 @@ function poll($, ctx) {
       void refresh($, ctx);
     });
 }
-async function setup($, ctx, enable) {
+async function setup($, ctx, enable, checkToken = null) {
   if (!ctx.supported) throw Error('Claude Code 2.1.296 or later required');
   const ticket = ctx.generation;
   const candidate = await workspaceFS($, ctx.cwd);
@@ -359,7 +376,7 @@ async function setup($, ctx, enable) {
   const reviewed = parseCheckConfig(
     new TextDecoder('utf-8', { fatal: true }).decode(raw),
   );
-  const preview = `Configuration ready. Run this in your PROJECT terminal when ready:\n${helperCommand($.plugin.root)}\nThen /ernesto evidence for the result.\nScope: ${reviewed.scope.roots.length} declared input roots; review .ernesto/config.json or /ernesto evidence for the full list and exclusions. Custom project inputs may need adding.\nRuntime: ${reviewed.runtimeDescriptor}. Project tests use your environment and may access the network.\nErnesto has not launched tests; running the terminal command above executes them.\n/ernesto qa on resumes observation; /ernesto qa off pauses it and remembers your choice.`;
+  const preview = `Detailed Vitest evidence connected. /ernesto check runs your project check here.\nScope: ${reviewed.scope.roots.length} declared inputs. Existing custom configuration is preserved. No tests start automatically.`;
   if (!enable) return preview;
   if (ticket !== ctx.generation || !ctx.state.prefs.qa)
     return 'Setup interrupted by a newer workspace or preference change. Run /ernesto status.';
@@ -369,41 +386,236 @@ async function setup($, ctx, enable) {
   ctx.generation++;
   ctx.state.qa = initialEvidence();
   poll($, ctx);
-  await refresh($, ctx);
+  await refresh($, ctx, checkToken);
   return 'Project QA enabled. ' + preview;
+}
+async function discover($, ctx, force = false) {
+  if (!ctx.supported || !ctx.state.enabled || ctx.state.prefs.hidden) return;
+  if (ctx.state.project && !force) return;
+  const generation = ctx.generation;
+  try {
+    const fs = await workspaceFS($, ctx.cwd);
+    const entries = await $.fs.list(fs.root);
+    if (entries.length > 512) throw Error('Project root too large');
+    let pkg = null,
+      vitest = null;
+    if (await fs.stat('package.json'))
+      pkg = new TextDecoder().decode(await fs.read('package.json'));
+    try {
+      vitest = JSON.parse(
+        new TextDecoder().decode(
+          await fs.read('node_modules/vitest/package.json'),
+        ),
+      ).version;
+    } catch {}
+    let configured = false;
+    try {
+      parseCheckConfig(
+        new TextDecoder('utf-8', { fatal: true }).decode(
+          await fs.read('.ernesto/config.json'),
+        ),
+      );
+      configured = true;
+    } catch {}
+    const detected = detectProject(
+      pkg,
+      entries,
+      vitest,
+      $.plugin.root,
+      configured,
+    );
+    let scope = null;
+    try {
+      scope = defaultCheckConfig(
+        entries.map((e) => ({
+          ...e,
+          kind: e.kind === 'dir' ? 'directory' : e.kind,
+        })),
+      ).scope;
+    } catch {}
+    if (
+      generation !== ctx.generation ||
+      !ctx.state.enabled ||
+      ctx.state.prefs.hidden
+    )
+      return;
+    ctx.projectFS = fs;
+    ctx.projectScope = scope;
+    ctx.state.project = detected || {
+      kind: 'none',
+      label: 'No test or check command detected',
+    };
+  } catch {
+    if (generation !== ctx.generation) return;
+    ctx.state.project = {
+      kind: 'none',
+      label: 'Project checks are unavailable; the companion is ready',
+    };
+  }
+  invalidate($);
+}
+async function commandSnapshot($, ctx, run) {
+  if (!ctx.projectFS || !run.scope) return null;
+  return captureSnapshot({
+    root: ctx.projectFS.root,
+    scope: run.scope,
+    runtime: 'project-command-v1',
+    checkDefinition: { argv: run.argv, scope: run.scope },
+    fs: ctx.projectFS,
+    now: await now($),
+    epoch: ctx.epoch,
+  });
+}
+async function refreshCommand($, ctx) {
+  const run = ctx.state.projectRun;
+  if (!run || run.status === 'running') return;
+  const generation = ctx.generation;
+  try {
+    const snapshot = await commandSnapshot($, ctx, run);
+    if (generation === ctx.generation && ctx.state.projectRun === run)
+      ctx.state.projectRun = compareCommand(run, snapshot, ctx.epoch);
+  } catch {
+    if (generation === ctx.generation && ctx.state.projectRun === run)
+      ctx.state.projectRun = { ...run, freshness: 'unknown' };
+  }
+  invalidate($);
+}
+async function checkProject($, ctx) {
+  if (!ctx.supported)
+    return 'Use Claude Code 2.1.296 or later for project checks.';
+  if (!ctx.state.enabled || ctx.state.prefs.hidden)
+    return 'Project checks are paused. /ernesto show and /ernesto qa on resume them.';
+  if (ctx.checkTask) return 'A project check is already running.';
+  const token = {};
+  ctx.checkTask = token;
+  const generation = ctx.generation;
+  const active = () =>
+    generation === ctx.generation &&
+    ctx.checkTask === token &&
+    ctx.state.enabled &&
+    !ctx.state.prefs.hidden;
+  try {
+    await discover($, ctx, true);
+    if (!active()) return 'Project check cancelled before launch.';
+    const project = ctx.state.project;
+    if (!project || project.kind === 'none')
+      return 'Ernesto is ready. No test or check command was detected in this project. There is nothing to configure for the companion.';
+    const startedAt = await now($);
+    if (!active()) return 'Project check cancelled before launch.';
+    const run = {
+      kind: project.kind,
+      label: project.label,
+      argv: project.argv,
+      status: 'running',
+      freshness: 'unknown',
+      exitCode: null,
+      startedAt,
+      scope: ctx.config?.scope || ctx.projectScope,
+      startEpoch: ctx.epoch,
+    };
+    ctx.state.projectRun = run;
+    ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
+    invalidate($);
+    try {
+      run.startSnapshot = await commandSnapshot($, ctx, run);
+    } catch {}
+    if (!active()) return 'Project check cancelled before launch.';
+    const result = await $.process.run(project.argv, {
+      cwd: ctx.projectFS.root,
+      env: { CI: '1' },
+      timeoutMs: 120000,
+    });
+    if (!active())
+      return 'Check finished after observation changed; result discarded.';
+    const validExit =
+      Number.isInteger(result.exitCode) &&
+      result.exitCode >= 0 &&
+      result.exitCode <= 255;
+    const completed = {
+      ...run,
+      status: validExit
+        ? result.exitCode === 0
+          ? 'completed'
+          : 'failed'
+        : 'unknown',
+      exitCode: validExit ? result.exitCode : null,
+      endedAt: await now($),
+      endEpoch: ctx.epoch,
+      output: outputPreview(result),
+    };
+    try {
+      completed.endSnapshot = await commandSnapshot($, ctx, run);
+    } catch {}
+    if (!active())
+      return 'Check finished after observation changed; result discarded.';
+    ctx.state.projectRun = compareCommand(
+      completed,
+      completed.endSnapshot,
+      ctx.epoch,
+    );
+    if (project.kind === 'vitest') {
+      try {
+        await setup($, ctx, true, token);
+      } catch {}
+      if (
+        ctx.state.projectRun &&
+        (!ctx.state.qa.record ||
+          ctx.state.qa.record.startedAt < startedAt ||
+          ctx.state.qa.record.endedAt > completed.endedAt)
+      )
+        ctx.state.projectRun = {
+          ...ctx.state.projectRun,
+          kind: 'command',
+          reason:
+            'The detailed Vitest integration could not produce a valid record. Inspect the command output in Details.',
+        };
+    }
+    return ctx.state.projectRun?.kind === 'command'
+      ? commandSummary(ctx.state.projectRun) +
+          '. Open /ernesto evidence for details.'
+      : statusText(
+          ctx.state.qa,
+          ctx.state.enabled,
+          ctx.config,
+          ctx.state.project,
+        );
+  } catch {
+    if (active())
+      ctx.state.projectRun = {
+        ...ctx.state.projectRun,
+        kind: 'command',
+        status: 'unknown',
+        freshness: 'unknown',
+        exitCode: null,
+        reason:
+          'The check could not start, was denied, or timed out. Check that the project package manager is installed.',
+      };
+    return 'The project check could not complete. Ernesto is still ready; see /ernesto evidence.';
+  } finally {
+    if (ctx.checkTask === token) ctx.checkTask = null;
+    invalidate($);
+  }
 }
 async function gettingStarted($, ctx, doctor = false) {
   if (!ctx.supported)
-    return 'Use Claude Code 2.1.296 or later, reload the plugin, then /ernesto setup. No project files read or changed.';
-  let candidate;
-  let summary;
-  try {
-    summary = await setup($, ctx, false);
-  } catch {
-    summary = `Project setup is needed (configuration missing, unreadable or invalid). No files changed.\nIn your PROJECT terminal, create conventional defaults and run the first check explicitly:\n${helperCommand($.plugin.root, '--init')}\nTo create defaults without running tests:\n${helperCommand($.plugin.root, '--setup')}\nExisting configuration is never overwritten. Review .ernesto/config.json for custom source, test and configuration inputs.\nAfterward, /ernesto refresh or /ernesto evidence. QA observation is ${ctx.state.prefs.qa ? 'on' : 'off; use /ernesto qa on to resume'}.`;
-  }
-  if (doctor) {
-    let runner =
-      'Missing or unreadable. Install project-local Vitest 4.1.11 yourself (npm install --save-dev vitest@4.1.11), or keep companion mode.';
-    try {
-      candidate = await workspaceFS($, ctx.cwd);
-      const installed = JSON.parse(
-        new TextDecoder().decode(
-          await candidate.read('node_modules/vitest/package.json'),
-        ),
-      );
-      runner =
-        installed.version === '4.1.11'
-          ? 'Vitest 4.1.11 is installed.'
-          : 'Unsupported runner version. This integration requires Vitest 4.1.11; no dependencies changed.';
-    } catch {}
-    summary =
-      'Host: supported Claude Code.\nRunner: ' +
-      runner +
-      '\nNode: the explicit helper checks for Node.js 24.\n' +
-      summary;
-  }
-  return summary;
+    return 'Ernesto is available as a companion. Project checks need Claude Code 2.1.296 or later.';
+  await discover($, ctx, true);
+  const project = ctx.state.project;
+  const ready = 'Ernesto is ready. No setup required.';
+  const check =
+    project && project.kind !== 'none'
+      ? `Detected: ${project.label}. Choose Check project or type /ernesto check to run it here.`
+      : 'No project test or check command detected. The companion works immediately.';
+  return [
+    ready,
+    check,
+    'Checks run only when you request them. No dependencies are installed.',
+    doctor
+      ? 'Detection supports existing npm/pnpm/yarn/bun test/check scripts, plus the optional Node 24 / Vitest 4.1.11 detailed integration. /ernesto refresh rereads evidence. Existing .ernesto/config.json remains optional.'
+      : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 export function register(on, options = {}) {
   const ctx = createContext(options);
@@ -421,6 +633,11 @@ export function register(on, options = {}) {
     ctx.epoch = 0;
     ctx.tainted.clear();
     ctx.busy = false;
+    ctx.checkTask = null;
+    ctx.projectFS = null;
+    ctx.projectScope = null;
+    ctx.state.project = null;
+    ctx.state.projectRun = null;
     try {
       const host = await $.session.version();
       const match = /^(\d+)\.(\d+)\.(\d+)/.exec(host.version);
@@ -433,8 +650,8 @@ export function register(on, options = {}) {
       await load($, ctx);
       await $.command.register({
         name: 'ernesto',
-        description: 'Companion controls and scoped Vitest evidence',
-        argumentHint: '[setup|doctor|evidence|qa on|qa off]',
+        description: 'Companion controls and one-action project checks',
+        argumentHint: '[check|setup|evidence|quiet on|qa off]',
         immediate: true,
       });
       ctx.state.enabled = ctx.supported && ctx.state.prefs.qa;
@@ -448,6 +665,12 @@ export function register(on, options = {}) {
   on('classic.SessionStart', async ($, e, next) => {
     if (['clear', 'resume', 'fork'].includes(e.source)) {
       ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
+      if (ctx.state.projectRun)
+        ctx.state.projectRun = {
+          ...ctx.state.projectRun,
+          freshness: 'unknown',
+          observationGap: true,
+        };
       ctx.generation++;
       schedule($, ctx);
     }
@@ -457,6 +680,11 @@ export function register(on, options = {}) {
     try {
       if (['Write', 'Edit', 'Bash'].includes(e.tool)) {
         ctx.epoch++;
+        if (ctx.state.projectRun)
+          ctx.state.projectRun = {
+            ...ctx.state.projectRun,
+            freshness: 'unknown',
+          };
         ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
         if (ctx.state.qa.pendingRun) {
           ctx.tainted.add(ctx.state.qa.pendingRun.runId);
@@ -485,7 +713,7 @@ export function register(on, options = {}) {
       if (c.action === 'help' || c.action === 'status')
         return {
           text:
-            (c.action === 'help' ? HELP : 'Ernesto 0.2.0 status') +
+            (c.action === 'help' ? HELP : 'Ernesto 0.3.0 status') +
             '\nSurface: ' +
             (ctx.surface || 'text fallback') +
             '; ' +
@@ -493,14 +721,22 @@ export function register(on, options = {}) {
               ? 'supported host'
               : 'requires Claude Code 2.1.296+') +
             '\n' +
-            statusText(ctx.state.qa, ctx.state.enabled, ctx.config),
+            statusText(
+              ctx.state.qa,
+              ctx.state.enabled,
+              ctx.config,
+              ctx.state.project,
+              ctx.state.projectRun,
+            ),
         };
+      if (c.action === 'check') return { text: await checkProject($, ctx) };
       if (c.action === 'setup' || c.action === 'doctor')
         return { text: await gettingStarted($, ctx, c.action === 'doctor') };
       if (c.action === 'qa enable') {
         if (!ctx.supported) throw Error('Unsupported host');
         ctx.state.prefs.qa = true;
         ctx.state.enabled = true;
+        ctx.state.projectRun = null;
         ctx.generation++;
         await save($, ctx, 'qa');
         poll($, ctx);
@@ -512,9 +748,7 @@ export function register(on, options = {}) {
           ctx.state.qa = initialEvidence();
           invalidate($);
           return {
-            text:
-              'QA observation on; setup needed.\n' +
-              (await gettingStarted($, ctx)),
+            text: 'QA observation on.\n' + (await gettingStarted($, ctx)),
           };
         }
       }
@@ -526,6 +760,7 @@ export function register(on, options = {}) {
         ctx.fs = null;
         ctx.config = null;
         ctx.state.qa = initialEvidence();
+        ctx.state.projectRun = null;
         await save($, ctx, 'qa');
         invalidate($);
         return {
@@ -538,6 +773,17 @@ export function register(on, options = {}) {
         if (ctx.state.prefs.hidden) {
           stop(ctx);
           ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
+          if (ctx.state.projectRun)
+            ctx.state.projectRun = {
+              ...ctx.state.projectRun,
+              status:
+                ctx.state.projectRun.status === 'running'
+                  ? 'unknown'
+                  : ctx.state.projectRun.status,
+              freshness: 'unknown',
+              observationGap: true,
+              output: '',
+            };
         } else {
           poll($, ctx);
           schedule($, ctx);
@@ -583,6 +829,7 @@ export function register(on, options = {}) {
         ctx.generation++;
         stop(ctx);
         ctx.state.qa = initialEvidence();
+        ctx.state.projectRun = null;
         ctx.fs = null;
         ctx.config = null;
         invalidate($);
@@ -593,7 +840,13 @@ export function register(on, options = {}) {
       if (c.action === 'refresh') {
         await refresh($, ctx);
         return {
-          text: detailsText(ctx.state.qa, ctx.state.enabled, ctx.config),
+          text: detailsText(
+            ctx.state.qa,
+            ctx.state.enabled,
+            ctx.config,
+            ctx.state.project,
+            ctx.state.projectRun,
+          ),
         };
       }
       if (c.action === 'evidence') {
@@ -608,7 +861,15 @@ export function register(on, options = {}) {
         return ctx.interactive &&
           (ctx.surface === 'terminal' || ctx.surface === 'desktop')
           ? {}
-          : { text: detailsText(ctx.state.qa, ctx.state.enabled, ctx.config) };
+          : {
+              text: detailsText(
+                ctx.state.qa,
+                ctx.state.enabled,
+                ctx.config,
+                ctx.state.project,
+                ctx.state.projectRun,
+              ),
+            };
       }
     } catch {
       ctx.state.qa = reduceEvidence(ctx.state.qa, { type: 'gap' });
@@ -629,7 +890,7 @@ export function register(on, options = {}) {
       e,
       theirs,
       { ...ctx.state, config: ctx.config },
-      $.plugin.root,
+      () => checkProject($, ctx),
     );
   });
   on('ui.render', { component: 'Pane' }, async ($, e, next) =>
@@ -644,6 +905,7 @@ export function register(on, options = {}) {
             ctx.state.detailsExpanded = !ctx.state.detailsExpanded;
             invalidate($);
           },
+          () => checkProject($, ctx),
         )
       : next(e),
   );
